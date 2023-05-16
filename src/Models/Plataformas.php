@@ -18,13 +18,13 @@ class Plataformas {
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public function post() {
-        $query = "";
+    public function post($data) {
+        $query = "INSERT INTO plataformas (nombre) VALUES ('".$data['nombre']."')";
         return $this->pdo->query($query);
     }
 
-    public function put() {
-        $query = "";
+    public function put($data) {
+        $query = "UPDATE plataformas SET nombre='".$data['nombre']."' WHERE id=".$data['id'];
         return $this->pdo->query($query);
     }
 

@@ -18,12 +18,12 @@ class Juegos {
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public function post() {
+    public function post($data) {
         $query = "";
         return $this->pdo->query($query);
     }
 
-    public function put() {
+    public function put($data) {
         $query = "";
         return $this->pdo->query($query);
     }

@@ -17,15 +17,19 @@ $app->get('/', function (Request $request, Response $response, $args) {
 });
 //a) Crear un nuevo género: implementar un endpoint para crear un nuevo genero en la tabla de géneros. El endpoint debe permitir enviar el nombre.
 $app->post('/generos', function (Request $request, Response $response, $args) {
-    $generos = new Generos();
-    $post = $generos->post();
+    //Capturo los campos enviados: nombre
+    $data = $request->getParsedBody();
+    $generos = new Generos($data);
+    $post = $generos->post($nombre);
     $response->getBody()->write('Crear género');
     return $response;
 });
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/generos', function (Request $request, Response $response, $args) {
+    //Capturo los campos enviados: nombre e id
+    $data = $request->getParsedBody();
     $generos = new Generos();
-    $put = $generos->put();
+    $put = $generos->put($data);
     $response->getBody()->write('Actualizar género');
     return $response;
 });
@@ -69,15 +73,19 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
 });
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
 $app->post('/plataformas', function (Request $request, Response $response, $args) {
+    //Capturo los campos enviados: nombre
+    $data = $request->getParsedBody();
     $plataformas = new Plataformas();
-    $post = $plataformas->post();
+    $post = $plataformas->post($data);
     $response->getBody()->write('Crear plataforma');
     return $response;
 });
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/plataformas', function (Request $request, Response $response, $args) {
+    //Capturo los campos enviados: nombre e id
+    $data = $request->getParsedBody();
     $plataformas = new Plataformas();
-    $put = $plataformas->put();
+    $put = $plataformas->put($data);
     $response->getBody()->write('Actualizar plataforma');
     return $response;
 });
@@ -121,15 +129,19 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
 });
 //i) Crear un nuevo juego: implementar un endpoint para crear un nuevo juego en la tabla de juegos. El endpoint debe permitir enviar el nombre, imagen, descripción, plataforma, URL y género.
 $app->post('/juegos', function (Request $request, Response $response, $args) {
+    //Capturo los campos enviados
+    $data = $request->getParsedBody();
     $juegos = new Juegos();
-    $post = $juegos->post();
+    $post = $juegos->post($data);
     $response->getBody()->write('Crear juego');
     return $response;
 });
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/juegos', function (Request $request, Response $response, $args) {
+    //Capturo los campos enviados
+    $data = $request->getParsedBody();
     $juegos = new Juegos();
-    $put = $juegos->put();
+    $put = $juegos->put($data);
     $response->getBody()->write('Actualizar juego');
     return $response;
 });
@@ -186,12 +198,12 @@ $app->get('/buscar', function (Request $request, Response $response, $args) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
             $response->getBody()->write("{\"msg\": \"No se encontraron datos en la BD.\"}");
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
         $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 

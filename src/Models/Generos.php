@@ -18,13 +18,13 @@ class Generos {
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public function post() {
-        $query = "";
+    public function post($data) {
+        $query = "INSERT INTO generos (nombre) VALUES ('".$data['nombre']."')";
         return $this->pdo->query($query);
     }
 
-    public function put() {
-        $query = "";
+    public function put($data) {
+        $query = "UPDATE generos SET nombre='".$data['nombre']."' WHERE id=".$data['id'];
         return $this->pdo->query($query);
     }
 

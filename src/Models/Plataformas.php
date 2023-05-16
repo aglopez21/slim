@@ -14,7 +14,7 @@ class Plataformas {
     }
 
     public function get() {
-        $query = "SELECT * FROM juegos";
+        $query = "SELECT * FROM plataformas";
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 

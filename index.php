@@ -173,8 +173,12 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
 });
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)
 $app->get('/buscar', function (Request $request, Response $response, $args) {
+    //getQueryParams() es un método de $request que captura los parametros en la URL, lo usaremos para capturar el nombre, plataforma y género, de juegos
+    $params = $request->getQueryParams();
+
     $busqueda = new Juegos();
-    $get = $busqueda->buscar();
+    $get = $busqueda->buscar($params);
+
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){

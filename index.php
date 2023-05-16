@@ -30,11 +30,23 @@ $app->put('/generos', function (Request $request, Response $response, $args) {
     return $response;
 });
 //c) Eliminar un género: el endpoint debe permitir enviar el id del genero y eliminarlo de la tabla.
-$app->delete('/generos', function (Request $request, Response $response, $args) {
+$app->delete('/generos/delete/{id}', function (Request $request, Response $response, $args) {
     $generos = new Generos();
-    $delete = $generos->delete();
-    $response->getBody()->write('Borrar género');
-    return $response;
+    $delete = $generos->delete($args['id']);
+    if($delete){
+        //Si se ejecutó correctamente la consulta
+        if($delete->rowCount() > 0){
+            $response->getBody()->write(json_encode("{\"msg\": \"Género eliminado.\"}"));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } else {
+            $response->getBody()->write("{\"msg\": \"ID no encontrado.\"}");
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+    }else{
+        //Si ocurrió un error
+        $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
 });
 //d) Obtener todos los géneros: implemente un endpoint para obtener todos los géneros de la tabla.
 $app->get('/generos', function (Request $request, Response $response, $args) {
@@ -47,12 +59,12 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
             $response->getBody()->write("{\"msg\": \"No se encontraron datos en la BD.\"}");
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
         $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
@@ -70,11 +82,23 @@ $app->put('/plataformas', function (Request $request, Response $response, $args)
     return $response;
 });
 //g) Eliminar una plataforma: el endpoint debe permitir enviar el id de la plataforma y eliminarla de la tabla.
-$app->delete('/plataformas', function (Request $request, Response $response, $args) {
+$app->delete('/plataformas/delete/{id}', function (Request $request, Response $response, $args) {
     $plataformas = new Plataformas();
-    $delete = $plataformas->delete();
-    $response->getBody()->write('Borrar plataforma');
-    return $response;
+    $delete = $plataformas->delete($args['id']);
+    if($delete){
+        //Si se ejecutó correctamente la consulta
+        if($delete->rowCount() > 0){
+            $response->getBody()->write(json_encode($delete->fetchAll()));
+            return $response->withHeader("{\"msg\": \"Plataforma eliminada.\"}")->withStatus(200);
+        } else {
+            $response->getBody()->write("{\"msg\": \"ID no encontrado.\"}");
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+    }else{
+        //Si ocurrió un error
+        $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
 });
 //h) Obtener todas las plataformas: implemente un endpoint para obtener todos los géneros de la tabla.
 $app->get('/plataformas', function (Request $request, Response $response, $args) {
@@ -87,12 +111,12 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
             $response->getBody()->write("{\"msg\": \"No se encontraron datos en la BD.\"}");
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
         $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 //i) Crear un nuevo juego: implementar un endpoint para crear un nuevo juego en la tabla de juegos. El endpoint debe permitir enviar el nombre, imagen, descripción, plataforma, URL y género.
@@ -110,11 +134,23 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
     return $response;
 });
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.
-$app->delete('/juegos', function (Request $request, Response $response, $args) {
+$app->delete('/juegos/delete/{id}', function (Request $request, Response $response, $args) {
     $juegos = new Juegos();
-    $delete = $juegos->delete();
-    $response->getBody()->write('Borrar juego');
-    return $response;
+    $delete = $juegos->delete($args['id']);
+    if($delete){
+        //Si se ejecutó correctamente la consulta
+        if($delete->rowCount() > 0){
+            $response->getBody()->write(json_encode("{\"msg\": \"Juego eliminado.\"}"));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } else {
+            $response->getBody()->write("{\"msg\": \"ID no encontrado.\"}");
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+    }else{
+        //Si ocurrió un error
+        $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
 });
 //l) Obtener todos los juegos: implemente un endpoint para obtener todos los juegos de la tabla.
 $app->get('/juegos', function (Request $request, Response $response, $args) {
@@ -127,12 +163,12 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
             $response->getBody()->write("{\"msg\": \"No se encontraron datos en la BD.\"}");
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
         $response->getBody()->write("{\"error\": \"Ocurrió algún error en la consulta.\"}");
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)

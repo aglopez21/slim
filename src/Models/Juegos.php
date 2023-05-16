@@ -28,9 +28,9 @@ class Juegos {
         return $this->pdo->query($query);
     }
 
-    public function delete() {
-        $query = "";
-        return $this->pdo->query($query);
+    public function delete($id) {
+        $query = "DELETE FROM juegos WHERE id=".$id;
+        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
     public function buscar() {

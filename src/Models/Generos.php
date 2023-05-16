@@ -28,9 +28,9 @@ class Generos {
         return $this->pdo->query($query);
     }
 
-    public function delete() {
-        $query = "";
-        return $this->pdo->query($query);
+    public function delete($id) {
+        $query = "DELETE FROM generos WHERE id=".$id;
+        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
 }

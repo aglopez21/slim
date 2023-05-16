@@ -1,6 +1,6 @@
 <?php
 
-namespace Db;
+namespace App\Models;
 
 class Db {
 
@@ -10,16 +10,17 @@ class Db {
     private $pass = '';
     private $pdo;
 
-    private function __construct() {
+    public function __construct() {
         try {
-            $this->pdo = new PDO("mysql:host=".$this->host.";dbname=".$this->$dbname, $this->$user, $this->$pass);
-        } catch (PDOException $e) {
+            $conexion = new \PDO("mysql:host=".$this->host.";dbname=".$this->dbname, $this->user, $this->pass);
+            $conexion->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->pdo = $conexion;
+        } catch (\PDOException $e) {
             die($e->getMessage());
         }
     }
 
-    public function getGeneros(){
-        $this->pdo->query("SELECT * FROM generos");
+    public function connect(){
+        return $this->pdo;
     }
-
 }

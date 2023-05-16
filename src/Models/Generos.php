@@ -13,20 +13,24 @@ class Generos {
         $this->pdo = $db->connect();
     }
 
-    public static function get() {
-        return "GET a Géneros";
+    public function get() {
+        $query = "SELECT * FROM generos";
+        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public static function post() {
-        return "POST a Géneros";
+    public function post() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function put() {
-        return "PUT a Géneros";
+    public function put() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function delete() {
-        return "\DELETE a Géneros";
+    public function delete() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
 }

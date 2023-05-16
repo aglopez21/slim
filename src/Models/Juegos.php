@@ -9,27 +9,33 @@ class Juegos {
     private $db;
 
     public function __construct() {
-        $this->db = new Db();
+        $db = new Db();
+        $this->pdo = $db->connect();
     }
 
-    public static function get() {
-        return "GET a Juegos";
+    public function get() {
+        $query = "SELECT * FROM juegos";
+        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public static function post() {
-        return "POST a Juegos";
+    public function post() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function put() {
-        return "PUT a Juegos";
+    public function put() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function delete() {
-        return "\DELETE a Juegos";
+    public function delete() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function buscar() {
-        return "GET a Búsqueda";
+    public function buscar() {
+        $query = "SELECT * FROM juegos";
+        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
 }

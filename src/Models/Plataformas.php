@@ -9,23 +9,28 @@ class Plataformas {
     private $db;
 
     public function __construct() {
-        $this->db = new Db();
+        $db = new Db();
+        $this->pdo = $db->connect();
     }
 
-    public static function get() {
-        return "GET a Plataformas";
+    public function get() {
+        $query = "SELECT * FROM juegos";
+        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public static function post() {
-        return "POST a Plataformas";
+    public function post() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function put() {
-        return "PUT a Plataformas";
+    public function put() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
-    public static function delete() {
-        return "\DELETE a Plataformas";
+    public function delete() {
+        $query = "";
+        return $this->pdo->query($query);
     }
 
 }

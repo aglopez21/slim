@@ -19,12 +19,12 @@ class Juegos {
     }
 
     public function post($data) {
-        $query = "";
+        $query = "INSERT INTO juegos(`nombre`, `imagen`, `tipo_imagen`, `descripcion`, `url`, `id_genero`, `id_plataforma`) VALUE('".$data['nombre']."', '".$data['imagen']."', '".$data['tipo_imagen']."', '".$data['descripcion']."', '".$data['url']."', '".$data['id_genero']."', '".$data['id_plataforma']."')";
         return $this->pdo->query($query);
     }
 
     public function put($data) {
-        $query = "";
+        $query = "UPDATE juegos SET `nombre`='".$data['nombre']."' AND `imagen`='".$data['imagen']."' AND `tipo_imagen`='".$data['tipo_imagen']."' AND `descripcion`='".$data['descripcion']."' AND `url`='".$data['url']."' AND `id_genero`='".$data['id_genero']."' AND `id_plataforma`='".$data['id_plataforma']."'";
         return $this->pdo->query($query);
     }
 
@@ -38,6 +38,7 @@ class Juegos {
         $condiciones = (isset($params['nombre']) ? ' AND nombre="'.$params['nombre'].'"' : '');
         $condiciones .= (isset($params['plataforma']) ? ' AND id_plataforma="'.$params['plataforma'].'"' : '');
         $condiciones .= (isset($params['genero']) ? ' AND id_genero="'.$params['genero'].'"' : '');
+        $condiciones .= (isset($params['orderby']) ? ' ORDER BY nombre '.$params['orderby'] : '');
         //Realizamos el string del QUERY
         $query = "SELECT * FROM juegos WHERE (1=1)".$condiciones;
         //Retornamos la consulta

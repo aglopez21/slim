@@ -1,6 +1,8 @@
 <?php
 
-    class Validacion{
+    namespace App\Models;
+
+    class Validaciones {
         private $config = array("topeDesc" => "255", "topeUrl" => 80);
         private $extensiones=array('image/jpg','image/png','image/jpeg');
        

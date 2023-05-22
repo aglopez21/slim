@@ -19,9 +19,17 @@ $app->get('/', function (Request $request, Response $response, $args) {
 $app->post('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre
     $data = $request->getParsedBody();
-    $generos = new Generos($data);
-    $post = $generos->post($nombre);
-    $response->getBody()->write('Crear género');
+    $validacion= new Validacion();
+    $validacion->validarNombre($data['nombre']);
+    if($validacion){
+        $generos = new Generos($data);
+        $post = $generos->post($nombre);
+        $response->getBody()->write('Crear género');
+    }
+    else{
+        $response->getBody()->write(json_encode("error\": \"Fallo la validacion\"}")); 
+        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
     return $response;
 });
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
@@ -131,20 +139,88 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $data = $request->getParsedBody();
+    $validacion=new Validacion();
+    $errores=[];
+    //validamos el nombre
+    if(!$validacion->validarNombre($data['nombre'])){
+        $errores[]="Ha fallado la validacion del nombre";
+    }
+
+    if(!$validacion->validarURL($data['url'])){
+        $errores[]="La url es invalida";
+    }
+
+
+    if(!$validacion->validarImagen($data['imagen'])){
+        $errores[]="La extension de la imagen no es valida";
+    }
+
+    if(!$validacion->validarDescripcion($data['descripcion'])){
+        $errores[]="Ha Fallado la validacion de la descripcion";
+    }
+
+    if(!empty($errores)){
     $juegos = new Juegos();
     $post = $juegos->post($data);
-    $response->getBody()->write('Crear juego');
+    $response->getBody()->write('Crear juego'); //falta agregar el juego
+    }
+    else{
+        $response->getBody()->write(json_encode($errores->fetchAll()));
+        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
     return $response;
+
+
+
+
 });
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $data = $request->getParsedBody();
+    //primero deberia validar que el id exista dentro de los juegos en la bd
+
+    $validacion=new Validacion();
+    $errores=[];
+    //si se se quiere modificar el nombre
+    if(isset($data['nombre'])){
+        if(!$validacion->validarNombre($data['nombre'])){
+            $errores[]="El nombre no es valido";
+        }
+    }
+    // si se quiere modificar la desc
+    if(isset($data['descripcion'])){
+        if(!$validacion->validarDescripcion($data['descripcion'])){
+            $errores[]="Ha Fallado la validacion de la descripcion";
+        }
+
+    }
+    // si se quiere modificar la imagen 
+    if(isset($data['imagen'])){
+        if(!$validacion->validarImagen($data['imagen'])){
+            $errores[]="La extension de la imagen no es valida";
+        }
+
+    }
+    // si se quiere modificar la url
+    if(isset($data['url'])){
+        if(!$validacion->validarURL($data['url'])){
+            $errores[]="La url es invalida";
+        }
+    }
+    if(empty($errores)){
     $juegos = new Juegos();
     $put = $juegos->put($data);
     $response->getBody()->write('Actualizar juego');
+    }
+    else{
+         $response->getBody()->write(json_encode($errores->fetchAll()));
+         $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
+    }
     return $response;
 });
+
+
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.
 $app->delete('/juegos/delete/{id}', function (Request $request, Response $response, $args) {
     $juegos = new Juegos();

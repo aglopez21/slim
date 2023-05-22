@@ -160,18 +160,16 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     }
 
     if(!empty($errores)){
-    $juegos = new Juegos();
-    $post = $juegos->post($data);
-    $response->getBody()->write('Crear juego'); //falta agregar el juego
-    }
-    else{
+        $juegos = new Juegos();
+        $post = $juegos->post($data);
+        $response->getBody()->write(json_encode($post));
+        $response->withHeader('Content-Type', 'application/json')->withStatus(200); 
+    }else{
         $response->getBody()->write(json_encode($errores->fetchAll()));
         $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
+    
     return $response;
-
-
-
 
 });
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
@@ -209,11 +207,11 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         }
     }
     if(empty($errores)){
-    $juegos = new Juegos();
-    $put = $juegos->put($data);
-    $response->getBody()->write('Actualizar juego');
-    }
-    else{
+        $juegos = new Juegos();
+        $put = $juegos->put($data);
+        $response->getBody()->write(json_encode($put));
+        $response->withHeader('Content-Type', 'application/json')->withStatus(200); 
+    }else{
          $response->getBody()->write(json_encode($errores->fetchAll()));
          $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
     }

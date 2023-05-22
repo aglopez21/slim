@@ -5,11 +5,11 @@
         private $extensiones=array('image/jpg','image/png','image/jpeg');
        
 
-        public function _construct(){}
+        public function _construct(){
+            return true;
+        }
 
-
-
-            //funcion de validacion de nombre
+        //funcion de validacion de nombre
         public function validarNombre($nombre){
             return is_string($nombre) and  !empty($nombre);
         }
@@ -30,9 +30,9 @@
         function validarImagen($img){
             return in_array($img,$extensiones);
 
-    }
-
         }
+
+    }
     
 
 ?>

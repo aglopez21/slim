@@ -26,13 +26,19 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
         if($validacion->validarNombre($data['nombre'])){
             $generos = new Generos();
             $post = $generos->post($data);
-            $response->getBody()->write($post);
+            if($post){
+                $response->getBody()->write(json_encode('{"msg": "Género insertado correctamente."}', JSON_UNESCAPED_UNICODE));
+                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            }else{
+                $response->getBody()->write(json_encode('{"error": "Error al insertar el género."}', JSON_UNESCAPED_UNICODE));
+                $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
         }else{
-            $response->getBody()->write(json_encode('{"error": "Falló la validación"}', JSON_UNESCAPED_UNICODE)); 
+            $response->getBody()->write(json_encode('{"error": "Falló la validación."}', JSON_UNESCAPED_UNICODE)); 
             $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
     }else{
-        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato"}', JSON_UNESCAPED_UNICODE)); 
+        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE)); 
         $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
     return $response;
@@ -86,11 +92,28 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
 });
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
 $app->post('/plataformas', function (Request $request, Response $response, $args) {
-    //Capturo los campos enviados: nombre
-    $data = $request->getParsedBody();
-    $plataformas = new Plataformas();
-    $post = $plataformas->post($data);
-    $response->getBody()->write('Crear plataforma');
+    $data = $request->getQueryParams();
+    if(isset($data)){
+        $validacion = new Validaciones();
+    
+        if($validacion->validarNombre($data['nombre'])){
+            $plataformas = new Plataformas();
+            $post = $plataformas->post($data);
+            if($post){
+                $response->getBody()->write(json_encode('{"msg": "Plataforma insertada correctamente."}', JSON_UNESCAPED_UNICODE));
+                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            }else{
+                $response->getBody()->write(json_encode('{"error": "Error al insertar la plataforma."}', JSON_UNESCAPED_UNICODE));
+                $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+        }else{
+            $response->getBody()->write(json_encode('{"error": "Falló la validación."}', JSON_UNESCAPED_UNICODE)); 
+            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+    }else{
+        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE)); 
+        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
     return $response;
 });
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar

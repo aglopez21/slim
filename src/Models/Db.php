@@ -16,7 +16,7 @@ class Db {
             $conexion->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->pdo = $conexion;
         } catch (\PDOException $e) {
-            die($e->getMessage());
+            return die($e->getMessage());
         }
     }
 

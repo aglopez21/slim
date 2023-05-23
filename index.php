@@ -166,7 +166,10 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
 //i) Crear un nuevo juego: implementar un endpoint para crear un nuevo juego en la tabla de juegos. El endpoint debe permitir enviar el nombre, imagen, descripción, plataforma, URL y género.
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
+    $img=$request->getUploadedFiles();
     $data = $request->getParsedBody();
+    print_r($img);
+
     $validacion=new Validacion();
     $errores=[];
     //validamos el nombre
@@ -179,21 +182,28 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     }
 
 
-    if(!$validacion->validarImagen($data['imagen'])){
+    if(!$validacion->validarImagen($img['imagen'])){
         $errores[]="La extension de la imagen no es valida";
     }
 
     if(!$validacion->validarDescripcion($data['descripcion'])){
         $errores[]="Ha Fallado la validacion de la descripcion";
     }
-
-    if(!empty($errores)){
+ 
+    if(empty($errores)){
     $juegos = new Juegos();
     $post = $juegos->post($data);
-    $response->getBody()->write('Crear juego'); //falta agregar el juego
+    if($post){
+        $response->getBody()->write(json_encode('{"msg": "Juego  insertado correctamente."}', JSON_UNESCAPED_UNICODE));
+        $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
     else{
-        $response->getBody()->write(json_encode($errores->fetchAll()));
+        $response->getBody()->write(json_encode('{"error": "Error al insertar el juego."}', JSON_UNESCAPED_UNICODE));
+        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+    }
+    else{
+        $response->getBody()->write(json_encode($errores));
         $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 

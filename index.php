@@ -6,10 +6,11 @@ use App\Models\Db;
 use App\Models\Juegos as Juegos;
 use App\Models\Generos as Generos;
 use App\Models\Plataformas as Plataformas;
+use App\Models\Validacion;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$app = AppFactory::create();
+$app = AppFactory::create();    
 
 $app->get('/', function (Request $request, Response $response, $args) {
     $response->getBody()->write("{\"msg\":\"Bienvenido a la API\"}");
@@ -139,7 +140,7 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $data = $request->getParsedBody();
-    $validacion=new Validacion();
+    $validacion= new Validacion();
     $errores=[];
     //validamos el nombre
     if(!$validacion->validarNombre($data['nombre'])){
@@ -159,7 +160,7 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
         $errores[]="Ha Fallado la validacion de la descripcion";
     }
 
-    if(!empty($errores)){
+    if(empty($errores)){
     $juegos = new Juegos();
     $post = $juegos->post($data);
     $response->getBody()->write('Crear juego'); //falta agregar el juego

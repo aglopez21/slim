@@ -1,14 +1,15 @@
 <?php
+    namespace App\Models;
 
-    class Validacion{
-        private $config = array("topeDesc" => "255", "topeUrl" => 80);
-        private $extensiones=array('image/jpg','image/png','image/jpeg');
-       
+    class Validacion {
+          private   $config = array("topeDesc" => "255", "topeUrl" => 80);
+          private  $extensiones= array('image/jpg','image/png','image/jpeg');
+
 
         public function _construct(){}
 
 
-
+        
             //funcion de validacion de nombre
         public function validarNombre($nombre){
             return is_string($nombre) and  !empty($nombre);
@@ -22,12 +23,12 @@
     
     
         //Función de validación URL
-        function validarURL($url){
+       public  function validarURL($url){
            return  (!empty($url)) and (is_string($url)) and ( strlen($url)<=$config['topeUrl']);
         }
     
         //Función de validación de imagen
-        function validarImagen($img){
+         public function validarImagen($img){
             return in_array($img,$extensiones);
 
     }
@@ -35,4 +36,3 @@
         }
     
 
-?>

@@ -29,7 +29,7 @@
     
         //Función de validación de imagen
          public function validarImagen($img){
-            return in_array($img->{type},$this->extensiones);
+            return in_array($img,$this->extensiones);
 
         }
 

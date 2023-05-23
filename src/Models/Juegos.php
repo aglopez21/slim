@@ -18,8 +18,11 @@ class Juegos {
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public function post($data) {
-        $query = "INSERT INTO juegos(`nombre`, `imagen`, `tipo_imagen`, `descripcion`, `url`, `id_genero`, `id_plataforma`) VALUE('".$data['nombre']."', '".$data['imagen']."', '".$data['tipo_imagen']."', '".$data['descripcion']."', '".$data['url']."', '".$data['id_genero']."', '".$data['id_plataforma']."')";
+    public function post($data,$img) {
+        $tipo_imagen = $img['imagen']->getClientMediaType();
+        $imagen=base64_encode(file_get_contents($img['imagen']->getFilePath()));
+
+        $query = "INSERT INTO juegos(`nombre`, `imagen`, `tipo_imagen`, `descripcion`, `url`, `id_genero`, `id_plataforma`) VALUE('".$data['nombre']."', '".$imagen."', '".$tipo_imagen."', '".$data['descripcion']."', '".$data['url']."', '".$data['id_genero']."', '".$data['id_plataforma']."')";
         return $this->pdo->query($query);
     }
 

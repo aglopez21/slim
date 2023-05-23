@@ -168,8 +168,6 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $img=$request->getUploadedFiles();
     $data = $request->getParsedBody();
-    print_r($img);
-
     $validacion=new Validacion();
     $errores=[];
     //validamos el nombre
@@ -182,7 +180,7 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     }
 
 
-    if(!$validacion->validarImagen($img['imagen'])){
+    if(!$validacion->validarImagen($img['imagen']->getClientMediaType())){
         $errores[]="La extension de la imagen no es valida";
     }
 
@@ -192,7 +190,7 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
  
     if(empty($errores)){
     $juegos = new Juegos();
-    $post = $juegos->post($data);
+    $post = $juegos->post($data,$img);
     if($post){
         $response->getBody()->write(json_encode('{"msg": "Juego  insertado correctamente."}', JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200);

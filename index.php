@@ -47,9 +47,20 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
 $app->put('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
     $data = $request->getParsedBody();
-    $generos = new Generos();
-    $put = $generos->put($data);
-    $response->getBody()->write('Actualizar género');
+    $validacion=new Validacion();
+    if($validacion->validarNombre($data['nombre'])){
+        $generos = new Generos();
+        $put = $generos->put($data);
+        if($put){
+        $response->getBody()->write('Genero Actualizado');
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        }
+        else{
+            $response->getBody()->write('{"msg": "Error al actualizar el genero."}')->withStatus(404);
+        }
+    }
+    else
+
     return $response;
 });
 //c) Eliminar un género: el endpoint debe permitir enviar el id del genero y eliminarlo de la tabla.
@@ -212,9 +223,11 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
 $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $data = $request->getParsedBody();
+
+   
     //primero deberia validar que el id exista dentro de los juegos en la bd
 
-    $validacion = new Validaciones();
+    $validacion = new Validacion();
     $errores=[];
     //si se se quiere modificar el nombre
     if(isset($data['nombre'])){
@@ -242,21 +255,29 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
             $errores[]="La url es invalida";
         }
     }
+    
     if(empty($errores)){
         $juegos = new Juegos();
         $put = $juegos->put($data);
+        if($put){
         $response->getBody()->write(json_encode($put));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200); 
+        }
+        else{
+            $response->getBody()->write(json_encode('{"error": "Error al actualizar  el juego."}', JSON_UNESCAPED_UNICODE));
+            $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
+        }
     }else{
          $response->getBody()->write(json_encode($errores->fetchAll()));
          $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
     }
     return $response;
+    
 });
 
 
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.
-$app->delete('/juegos/delete/{id}', function (Request $request, Response $response, $args) {
+$app->delete('/juegos/{id}', function (Request $request, Response $response, $args) {
     $juegos = new Juegos();
     $delete = $juegos->delete($args['id']);
     if($delete){
@@ -281,6 +302,7 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){
+            print_r($get);
             $response->getBody()->write(json_encode($get->fetchAll()));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {

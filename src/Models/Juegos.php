@@ -27,7 +27,29 @@ class Juegos {
     }
 
     public function put($data) {
-        $query = "UPDATE juegos SET `nombre`='".$data['nombre']."' AND `imagen`='".$data['imagen']."' AND `tipo_imagen`='".$data['tipo_imagen']."' AND `descripcion`='".$data['descripcion']."' AND `url`='".$data['url']."' AND `id_genero`='".$data['id_genero']."' AND `id_plataforma`='".$data['id_plataforma']."'";
+
+        var_dump($data);
+        $modificaciones="";
+        if(isset($data['nombre'])){
+            $modificaciones='nombre="'.$data['nombre'].'"';
+    }
+        if(isset($data['imagen'])){
+            $modificaciones="";
+        }
+        if(isset($data['descripcion'])){
+            $modificaciones=' AND `descripcion`="'.$data['descripcion'].'"';
+}
+        if(isset($data['url'])){
+            $modificaciones=' AND `url`="'.$data['url'].'"';
+        }
+        if(isset($data['id_genero'])){
+            $modificaciones=' AND `id_genero`="'.$data['id_genero'].'"';
+        }
+        if(isset($data['id_plataforma'])){
+            $modificaciones=' AND `id_plataforma`="'.$data['id_plataforma'].'"';
+        }
+
+        $query = "UPDATE juegos SET .$modificaciones."; //WHERE ".$data['id'];
         return $this->pdo->query($query);
     }
 

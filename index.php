@@ -131,10 +131,25 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/plataformas', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getParsedBody();
-    $plataformas = new Plataformas();
-    $put = $plataformas->put($data);
-    $response->getBody()->write('Actualizar plataforma');
+    $data = $request->getQueryParams();
+    $validacion=new Validacion();
+    if($validacion->validarNombre($data['nombre'])){
+        $plataformas = new Plataformas();
+        $put = $plataformas->put($data);
+        if($put){
+        $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}'));
+        $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        }
+        else{
+            $response->getBody()->write("{\"msg\": \"ID no encontrado.\"}");
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+    }
+    else{
+        $response->getBody()->write('{"error": "Fallo la validacion."}');
+        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+
+    }
     return $response;
 });
 //g) Eliminar una plataforma: el endpoint debe permitir enviar el id de la plataforma y eliminarla de la tabla.

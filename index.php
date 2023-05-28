@@ -57,7 +57,7 @@ $app->put('/generos', function (Request $request, Response $response, $args) {
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         }
         else{
-            $response->getBody()->write('{"msg": "Error al actualizar el genero."}')->withStatus(404);
+            $response->getBody()->write('{"msg": "Error al actualizar el genero."}')->withStatus(400);
         }
     }
     else

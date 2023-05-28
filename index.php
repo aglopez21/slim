@@ -21,7 +21,7 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre
     $data = $request->getQueryParams();
     if(isset($data)){
-        $validacion = new Validaciones();
+        $validacion = new Validacion();
     
         if($validacion->validarNombre($data['nombre'])){
             $generos = new Generos();
@@ -46,7 +46,8 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams(); 
+    var_dump($data);
     $validacion=new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $generos = new Generos();
@@ -222,35 +223,32 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
-    $data = $request->getParsedBody();
-
-   
+    $data = $request->getQueryParams();
     //primero deberia validar que el id exista dentro de los juegos en la bd
-
     $validacion = new Validacion();
     $errores=[];
     //si se se quiere modificar el nombre
-    if(isset($data['nombre'])){
+    if(!!empty($data['nombre'])){
         if(!$validacion->validarNombre($data['nombre'])){
             $errores[]="El nombre no es valido";
         }
     }
     // si se quiere modificar la desc
-    if(isset($data['descripcion'])){
+    if(!empty($data['descripcion'])){
         if(!$validacion->validarDescripcion($data['descripcion'])){
             $errores[]="Ha Fallado la validacion de la descripcion";
         }
 
     }
     // si se quiere modificar la imagen 
-    if(isset($data['imagen'])){
+    if(!empty($data['imagen'])){
         if(!$validacion->validarImagen($data['imagen'])){
             $errores[]="La extension de la imagen no es valida";
         }
 
     }
     // si se quiere modificar la url
-    if(isset($data['url'])){
+    if(!empty($data['url'])){
         if(!$validacion->validarURL($data['url'])){
             $errores[]="La url es invalida";
         }
@@ -268,7 +266,7 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
             $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
         }
     }else{
-         $response->getBody()->write(json_encode($errores->fetchAll()));
+         $response->getBody()->write(json_encode($errores));
          $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
     }
     return $response;

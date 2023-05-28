@@ -28,33 +28,36 @@ class Juegos {
 
     public function put($data) {
 
-        var_dump($data);
         $modificaciones="";
-        if(isset($data['nombre'])){
-            $modificaciones='nombre="'.$data['nombre'].'"';
+        
+        if(!empty($data['nombre'])){
+            $modificaciones .='`nombre`="'.$data['nombre'].'"';
     }
-        if(isset($data['imagen'])){
-            $modificaciones="";
+        if(!empty($data['imagen'])){
+            $modificaciones.="";
         }
-        if(isset($data['descripcion'])){
-            $modificaciones=' AND `descripcion`="'.$data['descripcion'].'"';
+        if(!empty($data['descripcion'])){
+            $modificaciones.='`descripcion`="'.$data['descripcion'].'"';
 }
-        if(isset($data['url'])){
-            $modificaciones=' AND `url`="'.$data['url'].'"';
+        if(!empty($data['url'])){
+            $modificaciones.='`url`="'.$data['url'].',"';
         }
-        if(isset($data['id_genero'])){
-            $modificaciones=' AND `id_genero`="'.$data['id_genero'].'"';
-        }
-        if(isset($data['id_plataforma'])){
-            $modificaciones=' AND `id_plataforma`="'.$data['id_plataforma'].'"';
+        if(!empty($data['id_genero']))
+            $modificaciones.='`id_genero`="'.$data['id_genero'].'" ';
+        
+        if(!empty($data['id_plataforma'])){
+            $modificaciones.='`id_plataforma`="'.$data['id_plataforma'].'"';
         }
 
-        $query = "UPDATE juegos SET .$modificaciones."; //WHERE ".$data['id'];
+        print_r($modificaciones);
+
+        $query = "UPDATE juegos SET $modificaciones WHERE  `id`=".$data['id'];
+        print_r($query);
         return $this->pdo->query($query);
     }
 
     public function delete($id) {
-        $query = "DELETE FROM juegos WHERE id=".$id;
+        $query = "DELETE FROM juegos WHERE".$id;
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 

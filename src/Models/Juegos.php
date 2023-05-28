@@ -15,7 +15,7 @@ class Juegos {
 
     public function get() {
         $query = "SELECT * FROM juegos";
-        return $this->pdo->query($query, \PDO::FETCH_ASSOC);
+        return $this->pdo->query($query);
     }
 
     public function post($data,$img) {

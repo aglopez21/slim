@@ -315,7 +315,6 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){
-            print_r($get);
             $response->getBody()->write(json_encode($get->fetchAll()));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {

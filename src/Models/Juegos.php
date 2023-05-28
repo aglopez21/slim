@@ -6,7 +6,7 @@ use App\Models\Db;
 
 class Juegos {
 
-    private $db;
+    private $pdo;
 
     public function __construct() {
         $db = new Db();

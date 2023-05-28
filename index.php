@@ -258,7 +258,7 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         $juegos = new Juegos();
         $put = $juegos->put($data);
         if($put){
-        $response->getBody()->write(json_encode($put));
+        $response->getBody()->write(json_encode('{"msg": "Juego  Actualizado correctamente."}', JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200); 
         }
         else{

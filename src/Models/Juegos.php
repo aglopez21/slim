@@ -29,30 +29,30 @@ class Juegos {
     public function put($data) {
 
         $modificaciones="";
-        
+        $prueba=[];
+
         if(!empty($data['nombre'])){
-            $modificaciones .='`nombre`="'.$data['nombre'].'"';
+            $prueba[]='`nombre`="'.$data['nombre'].'"';
     }
         if(!empty($data['imagen'])){
             $modificaciones.="";
         }
         if(!empty($data['descripcion'])){
-            $modificaciones.='`descripcion`="'.$data['descripcion'].'"';
+            $prueba[]='`descripcion`="'.$data['descripcion'].'"';
 }
         if(!empty($data['url'])){
-            $modificaciones.='`url`="'.$data['url'].',"';
+            $prueba[]='`url`="'.$data['url'].'"';
         }
         if(!empty($data['id_genero']))
-            $modificaciones.='`id_genero`="'.$data['id_genero'].'" ';
+            $prueba[]='`id_genero`="'.$data['id_genero'].'" ';
         
         if(!empty($data['id_plataforma'])){
-            $modificaciones.='`id_plataforma`="'.$data['id_plataforma'].'"';
+            $prueba[]='`id_plataforma`="'.$data['id_plataforma'].'"';
         }
+        $resul=implode(',' , $prueba);
+        print_r($resul);
 
-        print_r($modificaciones);
-
-        $query = "UPDATE juegos SET $modificaciones WHERE  `id`=".$data['id'];
-        print_r($query);
+        $query = "UPDATE juegos SET $resul WHERE  `id`=".$data['id'];
         return $this->pdo->query($query);
     }
 

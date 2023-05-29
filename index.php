@@ -73,12 +73,12 @@ $app->delete('/generos/{id}', function (Request $request, Response $response, $a
             $response->getBody()->write(json_encode('{"msg": "Género eliminado."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write('{"msg": "ID no encontrado."}', JSON_UNESCAPED_UNICODE);
+            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -89,15 +89,15 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){
-            $response->getBody()->write(json_encode($get->fetchAll()));
+            $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -136,16 +136,16 @@ $app->put('/plataformas/{id}', function (Request $request, Response $response, $
         $plataformas = new Plataformas();
         $put = $plataformas->put($args['id'], $data);
         if($put){
-        $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}'));
+        $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}', JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         }
         else{
-            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}"'));
+            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}"', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
     else{
-        $response->getBody()->write(json_encode('{"error": "Fallo la validacion."}'));
+        $response->getBody()->write(json_encode('{"error": "Fallo la validacion."}', JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
     }
@@ -158,15 +158,15 @@ $app->delete('/plataformas/{id}', function (Request $request, Response $response
     if($delete){
         //Si se ejecutó correctamente la consulta
         if($delete->rowCount() > 0){
-            $response->getBody()->write(json_encode('{"msg": "Plataforma eliminada."}'));
+            $response->getBody()->write(json_encode('{"msg": "Plataforma eliminada."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write(json_encode('{"msg": "Plataforma no encontrada."}'));
+            $response->getBody()->write(json_encode('{"msg": "Plataforma no encontrada."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -177,15 +177,15 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){
-            $response->getBody()->write(json_encode($get->fetchAll()));
+            $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -227,7 +227,7 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     }
     }
     else{
-        $response->getBody()->write(json_encode($errores));
+        $response->getBody()->write(json_encode($errores, JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 
@@ -280,7 +280,7 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
             $response->withHeader('Content-Type', 'application/json')->withStatus(404); 
         }
     }else{
-         $response->getBody()->write(json_encode($errores));
+         $response->getBody()->write(json_encode($errores, JSON_UNESCAPED_UNICODE));
          $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
     }
     return $response;
@@ -295,15 +295,15 @@ $app->delete('/juegos/{id}', function (Request $request, Response $response, $ar
     if($delete){
         //Si se ejecutó correctamente la consulta
         if($delete->rowCount() > 0){
-            $response->getBody()->write(json_encode('{"msg": "Juego eliminado."}'));
+            $response->getBody()->write(json_encode('{"msg": "Juego eliminado."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}'));
+            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -314,15 +314,15 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){
-            $response->getBody()->write(json_encode($get->fetchAll()));
+            $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -337,15 +337,15 @@ $app->get('/buscar', function (Request $request, Response $response, $args) {
     if($get){
         //Si se ejecutó correctamente la consulta
         if($get->rowCount() > 0){
-            $response->getBody()->write(json_encode($get->fetchAll()));
+            $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });

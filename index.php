@@ -46,13 +46,13 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
 });
 
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/generos/{id}', function (Request $request, Response $response, $args) {
+$app->put('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
     $data = $request->getQueryParams();
     $validacion = new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $generos = new Generos();
-        $put = $generos->put($args['id'], $data);
+        $put = $generos->put($data);
         if($put){
             $response->getBody()->write(json_encode('{"msg": "Género actualizado"}', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -133,13 +133,13 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
 });
 
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/plataformas/{id}', function (Request $request, Response $response, $args) {
+$app->put('/plataformas', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
     $data = $request->getQueryParams();
     $validacion=new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $plataformas = new Plataformas();
-        $put = $plataformas->put($args['id'], $data);
+        $put = $plataformas->put($data);
         if($put){
         $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}', JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200);

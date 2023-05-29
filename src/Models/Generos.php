@@ -23,8 +23,8 @@ class Generos {
         return $this->pdo->query($query);
     }
 
-    public function put($id, $data) {
-        $query = "UPDATE generos SET nombre='".$data['nombre']."' WHERE id=".$id;
+    public function put($data) {
+        $query = "UPDATE generos SET nombre='".$data['nombre']."' WHERE id=".$data['id'];
         return $this->pdo->query($query);
     }
 

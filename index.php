@@ -13,9 +13,10 @@ require __DIR__ . '/vendor/autoload.php';
 $app = AppFactory::create();    
 
 $app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write('{"msg": "Bienvenido a la API!"}');
+    $response->getBody()->write(json_encode('{"msg": "Bienvenido a la API!"}', JSON_UNESCAPED_UNICODE));
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
+
 //a) Crear un nuevo género: implementar un endpoint para crear un nuevo genero en la tabla de géneros. El endpoint debe permitir enviar el nombre.
 $app->post('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre
@@ -43,6 +44,7 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
     }
     return $response;
 });
+
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/generos/{id}', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
@@ -52,17 +54,18 @@ $app->put('/generos/{id}', function (Request $request, Response $response, $args
         $generos = new Generos();
         $put = $generos->put($args['id'], $data);
         if($put){
-        $response->getBody()->write('Genero Actualizado');
+        $response->getBody()->write(json_encode('Genero Actualizado', JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         }
         else{
-            $response->getBody()->write('{"msg": "Error al actualizar el genero."}')->withStatus(400);
+            $response->getBody()->write(json_encode('{"msg": "Error al actualizar el genero."}', JSON_UNESCAPED_UNICODE))->withStatus(400);
         }
     }
     else
 
     return $response;
 });
+
 //c) Eliminar un género: el endpoint debe permitir enviar el id del genero y eliminarlo de la tabla.
 $app->delete('/generos/{id}', function (Request $request, Response $response, $args) {
     $generos = new Generos();
@@ -82,6 +85,7 @@ $app->delete('/generos/{id}', function (Request $request, Response $response, $a
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
+
 //d) Obtener todos los géneros: implemente un endpoint para obtener todos los géneros de la tabla.
 $app->get('/generos', function (Request $request, Response $response, $args) {
     $generos = new Generos();
@@ -101,6 +105,7 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
+
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
 $app->post('/plataformas', function (Request $request, Response $response, $args) {
     $data = $request->getParsedBody();
@@ -127,10 +132,11 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
     }
     return $response;
 });
+
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/plataformas/{id}', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getQueryParams();
+    $data = $request->getParsedBody();
     $validacion=new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $plataformas = new Plataformas();
@@ -151,6 +157,7 @@ $app->put('/plataformas/{id}', function (Request $request, Response $response, $
     }
     return $response;
 });
+
 //g) Eliminar una plataforma: el endpoint debe permitir enviar el id de la plataforma y eliminarla de la tabla.
 $app->delete('/plataformas/{id}', function (Request $request, Response $response, $args) {
     $plataformas = new Plataformas();
@@ -170,6 +177,7 @@ $app->delete('/plataformas/{id}', function (Request $request, Response $response
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
+
 //h) Obtener todas las plataformas: implemente un endpoint para obtener todos los géneros de la tabla.
 $app->get('/plataformas', function (Request $request, Response $response, $args) {
     $plataformas = new Plataformas();
@@ -189,6 +197,7 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
+
 //i) Crear un nuevo juego: implementar un endpoint para crear un nuevo juego en la tabla de juegos. El endpoint debe permitir enviar el nombre, imagen, descripción, plataforma, URL y género.
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
@@ -234,6 +243,7 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     return $response;
 
 });
+
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
@@ -287,7 +297,6 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
     
 });
 
-
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.
 $app->delete('/juegos/{id}', function (Request $request, Response $response, $args) {
     $juegos = new Juegos();
@@ -307,6 +316,7 @@ $app->delete('/juegos/{id}', function (Request $request, Response $response, $ar
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
+
 //l) Obtener todos los juegos: implemente un endpoint para obtener todos los juegos de la tabla.
 $app->get('/juegos', function (Request $request, Response $response, $args) {
     $juegos = new Juegos();
@@ -326,6 +336,7 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
+
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)
 $app->get('/buscar', function (Request $request, Response $response, $args) {
     //getQueryParams() es un método de $request que captura los parametros en la URL, lo usaremos para capturar el nombre, plataforma y género, de juegos

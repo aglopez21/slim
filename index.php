@@ -20,7 +20,7 @@ $app->get('/', function (Request $request, Response $response, $args) {
 //a) Crear un nuevo género: implementar un endpoint para crear un nuevo genero en la tabla de géneros. El endpoint debe permitir enviar el nombre.
 $app->post('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams();
     if(isset($data)){
         $validacion = new Validacion();
     
@@ -48,16 +48,15 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/generos/{id}', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams();
     $validacion = new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $generos = new Generos();
         $put = $generos->put($args['id'], $data);
         if($put){
-        $response->getBody()->write(json_encode('Genero Actualizado', JSON_UNESCAPED_UNICODE));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        }
-        else{
+            $response->getBody()->write(json_encode('{"msg": "Género actualizado"}', JSON_UNESCAPED_UNICODE));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } else {
             $response->getBody()->write(json_encode('{"msg": "Error al actualizar el genero."}', JSON_UNESCAPED_UNICODE))->withStatus(400);
         }
     }
@@ -108,7 +107,7 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
 
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
 $app->post('/plataformas', function (Request $request, Response $response, $args) {
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams();
     if(isset($data)){
         $validacion = new Validacion();
     
@@ -136,7 +135,7 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/plataformas/{id}', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams();
     $validacion=new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $plataformas = new Plataformas();
@@ -202,7 +201,7 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $img=$request->getUploadedFiles();
-    $data = $request->getParsedBody();
+    $data = $request->getQueryParams();
     $validacion=new Validacion();
     $errores=[];
     //validamos el nombre

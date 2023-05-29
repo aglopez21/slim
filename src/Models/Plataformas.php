@@ -23,8 +23,8 @@ class Plataformas {
         return $this->pdo->query($query);
     }
 
-    public function put($data) {
-        $query = "UPDATE plataformas SET nombre='".$data['nombre']."' WHERE id=".$data['id'];
+    public function put($id, $data) {
+        $query = "UPDATE plataformas SET nombre='".$data['nombre']."' WHERE id=".$id;
         return $this->pdo->query($query);
     }
 

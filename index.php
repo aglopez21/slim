@@ -19,7 +19,7 @@ $app->get('/', function (Request $request, Response $response, $args) {
 //a) Crear un nuevo género: implementar un endpoint para crear un nuevo genero en la tabla de géneros. El endpoint debe permitir enviar el nombre.
 $app->post('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre
-    $data = $request->getQueryParams();
+    $data = $request->getParsedBody();
     if(isset($data)){
         $validacion = new Validacion();
     
@@ -44,14 +44,13 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
     return $response;
 });
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/generos', function (Request $request, Response $response, $args) {
+$app->put('/generos/{id}', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getQueryParams(); 
-    var_dump($data);
-    $validacion=new Validacion();
+    $data = $request->getParsedBody();
+    $validacion = new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $generos = new Generos();
-        $put = $generos->put($data);
+        $put = $generos->put($args['id'], $data);
         if($put){
         $response->getBody()->write('Genero Actualizado');
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -65,7 +64,7 @@ $app->put('/generos', function (Request $request, Response $response, $args) {
     return $response;
 });
 //c) Eliminar un género: el endpoint debe permitir enviar el id del genero y eliminarlo de la tabla.
-$app->delete('/generos/delete/{id}', function (Request $request, Response $response, $args) {
+$app->delete('/generos/{id}', function (Request $request, Response $response, $args) {
     $generos = new Generos();
     $delete = $generos->delete($args['id']);
     if($delete){
@@ -93,20 +92,20 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
             $response->getBody()->write(json_encode($get->fetchAll()));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write("{\"msg\": \"No se encontraron datos en la BD.\"}");
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
 $app->post('/plataformas', function (Request $request, Response $response, $args) {
-    $data = $request->getQueryParams();
+    $data = $request->getParsedBody();
     if(isset($data)){
-        $validacion = new Validaciones();
+        $validacion = new Validacion();
     
         if($validacion->validarNombre($data['nombre'])){
             $plataformas = new Plataformas();
@@ -129,45 +128,45 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
     return $response;
 });
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/plataformas', function (Request $request, Response $response, $args) {
+$app->put('/plataformas/{id}', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
     $data = $request->getQueryParams();
     $validacion=new Validacion();
     if($validacion->validarNombre($data['nombre'])){
         $plataformas = new Plataformas();
-        $put = $plataformas->put($data);
+        $put = $plataformas->put($args['id'], $data);
         if($put){
         $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}'));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         }
         else{
-            $response->getBody()->write("{\"msg\": \"ID no encontrado.\"}");
+            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}"'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
     else{
-        $response->getBody()->write('{"error": "Fallo la validacion."}');
+        $response->getBody()->write(json_encode('{"error": "Fallo la validacion."}'));
         $response->withHeader('Content-Type', 'application/json')->withStatus(400);
 
     }
     return $response;
 });
 //g) Eliminar una plataforma: el endpoint debe permitir enviar el id de la plataforma y eliminarla de la tabla.
-$app->delete('/plataformas/delete/{id}', function (Request $request, Response $response, $args) {
+$app->delete('/plataformas/{id}', function (Request $request, Response $response, $args) {
     $plataformas = new Plataformas();
     $delete = $plataformas->delete($args['id']);
     if($delete){
         //Si se ejecutó correctamente la consulta
         if($delete->rowCount() > 0){
-            $response->getBody()->write(json_encode($delete->fetchAll()));
-            return $response->withHeader('{"msg": "Plataforma eliminada."}')->withStatus(200);
+            $response->getBody()->write(json_encode('{"msg": "Plataforma eliminada."}'));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write("{\"msg\": \"ID no encontrado.\"}");
+            $response->getBody()->write(json_encode('{"msg": "Plataforma no encontrada."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -181,12 +180,12 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
             $response->getBody()->write(json_encode($get->fetchAll()));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write('{"msg": "No se encontraron datos en la BD."}');
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -224,7 +223,7 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
     }
     else{
         $response->getBody()->write(json_encode('{"error": "Error al insertar el juego."}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $response->withHeader('Content-Type', 'application/json')->withStatus(404);
     }
     }
     else{
@@ -278,7 +277,7 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         }
         else{
             $response->getBody()->write(json_encode('{"error": "Error al actualizar  el juego."}', JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400); 
+            $response->withHeader('Content-Type', 'application/json')->withStatus(404); 
         }
     }else{
          $response->getBody()->write(json_encode($errores));
@@ -299,7 +298,7 @@ $app->delete('/juegos/{id}', function (Request $request, Response $response, $ar
             $response->getBody()->write(json_encode('{"msg": "Juego eliminado."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write('{"msg": "ID no encontrado."}');
+            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
@@ -318,12 +317,12 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
             $response->getBody()->write(json_encode($get->fetchAll()));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write('{"msg": "No se encontraron datos en la BD."}');
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -341,12 +340,12 @@ $app->get('/buscar', function (Request $request, Response $response, $args) {
             $response->getBody()->write(json_encode($get->fetchAll()));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } else {
-            $response->getBody()->write('{"msg": "No se encontraron datos en la BD."}');
+            $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}'));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }else{
         //Si ocurrió un error
-        $response->getBody()->write('{"error": "Ocurrió algún error en la consulta."}');
+        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });

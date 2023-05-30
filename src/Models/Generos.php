@@ -19,12 +19,12 @@ class Generos {
     }
 
     public function post($data) {
-        $query = "INSERT INTO generos (nombre) VALUES ('".$data['nombre']."')";
+        $query = "INSERT INTO generos (nombre) VALUES ('".$data->nombre."')";
         return $this->pdo->query($query);
     }
 
     public function put($data) {
-        $query = "UPDATE generos SET nombre='".$data['nombre']."' WHERE id=".$data['id'];
+        $query = "UPDATE generos SET nombre='".$data->nombre."' WHERE id=".$data->id;
         return $this->pdo->query($query);
     }
 

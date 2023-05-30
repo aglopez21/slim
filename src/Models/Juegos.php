@@ -19,40 +19,78 @@ class Juegos {
     }
 
     public function post($data,$img) {
+
         $tipo_imagen = $img['imagen']->getClientMediaType();
         $imagen=base64_encode(file_get_contents($img['imagen']->getFilePath()));
 
-        $query = "INSERT INTO juegos(`nombre`, `imagen`, `tipo_imagen`, `descripcion`, `url`, `id_genero`, `id_plataforma`) VALUE('".$data['nombre']."', '".$imagen."', '".$tipo_imagen."', '".$data['descripcion']."', '".$data['url']."', '".$data['id_genero']."', '".$data['id_plataforma']."')";
+        $arregloFields = [];
+        $arregloValues = [];
+
+        if(isset($data->nombre) && !empty($data->nombre)){
+            $arregloFields[] = '`nombre`';
+            $arregloValues[] = "'".$data->nombre."'";
+        }
+        if(isset($imagen) && !empty($imagen)){
+            $arregloFields[] = '`imagen`';
+            $arregloValues[] = "'".$imagen."'";
+
+            $arregloFields[] = '`tipo_imagen`';
+            $arregloValues[] = "'".$tipo_imagen."'";
+        }
+        if(isset($data->descripcion) && !empty($data->descripcion)){
+            $arregloFields[] = '`descripcion`';
+            $arregloValues[] = "'".$data->descripcion."'";
+        }
+        if(isset($data->url) && !empty($data->url)){
+            $arregloFields[] = '`url`';
+            $arregloValues[] = "'".$data->url."'";
+        }
+        if(isset($data->id_genero) && !empty($data->id_genero)){
+            $arregloFields[] = '`id_genero`';
+            $arregloValues[] = "".$data->id_genero."";
+        }
+        if(isset($data->id_plataforma) && !empty($data->id_plataforma)){
+            $arregloFields[] = '`id_plataforma`';
+            $arregloValues[] = "".$data->id_plataforma."";
+        }
+
+        $fieldsArr = implode(',' , $arregloFields);
+        $valuesArr = implode(',' , $arregloValues);
+
+        $query = "INSERT INTO juegos($fieldsArr) VALUE($valuesArr)";
         return $this->pdo->query($query);
     }
 
-    public function put($data) {
+    public function put($data, $img = NULL) {
 
-        $modificaciones="";
-        $prueba=[];
+        $arregloSET = [];
 
-        if(!empty($data['nombre'])){
-            $prueba[]='`nombre`="'.$data['nombre'].'"';
+        if(isset($data->nombre) && !empty($data->nombre)){
+            $arregloSET[]='`nombre`="'.$data->nombre.'"';
     }
-        if(!empty($data['imagen'])){
-            $modificaciones.="";
-        }
-        if(!empty($data['descripcion'])){
-            $prueba[]='`descripcion`="'.$data['descripcion'].'"';
-}
-        if(!empty($data['url'])){
-            $prueba[]='`url`="'.$data['url'].'"';
-        }
-        if(!empty($data['id_genero']))
-            $prueba[]='`id_genero`="'.$data['id_genero'].'" ';
-        
-        if(!empty($data['id_plataforma'])){
-            $prueba[]='`id_plataforma`="'.$data['id_plataforma'].'"';
-        }
-        $resul=implode(',' , $prueba);
-        print_r($resul);
+        if(isset($img)){
+            $imagen=base64_encode(file_get_contents($img['imagen']->getFilePath()));
+            $tipo_imagen = $img['imagen']->getClientMediaType();
 
-        $query = "UPDATE juegos SET $resul WHERE  `id`=".$data['id'];
+            $arregloSET[]='`imagen`="'.$imagen.'"';
+            $arregloSET[]='`tipo_imagen`="'.$tipo_imagen.'"';
+        }
+        if(isset($data->descripcion) && !empty($data->descripcion)){
+            $arregloSET[]='`descripcion`="'.$data->descripcion.'"';
+}
+        if(isset($data->url) && !empty($data->url)){
+            $arregloSET[]='`url`="'.$data->url.'"';
+        }
+        if(isset($data->id_genero) && !empty($data->id_genero)){
+            $arregloSET[]='`id_genero`="'.$data->id_genero.'" ';
+        }
+        if(isset($data->id_plataforma) && !empty($data->id_plataforma)){
+            $arregloSET[]='`id_plataforma`="'.$data->id_plataforma.'"';
+        }
+
+        $setsArr = implode(',' , $arregloSET);
+
+        $query = "UPDATE juegos SET $setsArr WHERE  `id`=".$data->id;
         return $this->pdo->query($query);
     }
 
@@ -61,12 +99,12 @@ class Juegos {
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }
 
-    public function buscar($params = array()) {
-        //Obtenemos los parametros por $params = pueden existir nombre, plataforma y género, por eso se concatena los resultados de los condicionantes
-        $condiciones = (isset($params['nombre']) ? ' AND nombre="'.$params['nombre'].'"' : '');
-        $condiciones .= (isset($params['plataforma']) ? ' AND id_plataforma="'.$params['plataforma'].'"' : '');
-        $condiciones .= (isset($params['genero']) ? ' AND id_genero="'.$params['genero'].'"' : '');
-        $condiciones .= (isset($params['orderby']) ? ' ORDER BY nombre '.$params['orderby'] : '');
+    public function buscar($data) {
+        //Obtenemos los parametros por $data = pueden existir nombre, plataforma y género, por eso se concatena los resultados de los condicionantes
+        $condiciones = (isset($data->nombre) ? ' AND nombre="'.$data->nombre.'"' : '');
+        $condiciones .= (isset($data->plataforma) ? ' AND id_plataforma="'.$data->plataforma.'"' : '');
+        $condiciones .= (isset($data->genero) ? ' AND id_genero="'.$data->genero.'"' : '');
+        $condiciones .= (isset($data->orderby) ? ' ORDER BY nombre '.$data->orderby : '');
         //Realizamos el string del QUERY
         $query = "SELECT * FROM juegos WHERE (1=1)".$condiciones;
         //Retornamos la consulta

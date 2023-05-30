@@ -353,9 +353,11 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
-    $data = json_encode($request->getParsedBody());
-    $data = json_decode($data);
-    $img = $request->getUploadedFiles();
+    $data=json_decode(file_get_contents('php://input'), true);
+    $data=json_encode($data);
+    $data=json_decode($data); // no me quedo otra que esto 
+    var_dump($data);
+
     //Comprobamos que no sean nulos
     if(isset($data->id)){
         //Iniciamos un nuevo objeto de Validación
@@ -364,16 +366,17 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         $errores = [];
         //Comprobamos que los datos sean válidos
         (isset($data->nombre) && !$validacion->validarNombre($data->nombre)) ? $errores['error_nombre'] = 'Nombre inválido' : '';
-        (isset($img) && !$validacion->validarImagen($img['imagen']->getClientMediaType())) ? $errores['error_imagen'] = 'Imagen inválida' : '';
+        //(isset($img) && !$validacion->validarImagen($img['imagen']->getClientMediaType())) ? $errores['error_imagen'] = 'Imagen inválida' : '';
         (isset($data->descripcion) && !$validacion->validarDescripcion($data->descripcion)) ? $errores['error_descripcion'] = 'Descripción inválida' : '';
         (isset($data->url) && !$validacion->validarURL($data->url)) ? $errores['error_url'] = 'URL inválida' : '';
         (!isset($data->id_genero)) ? $errores['error_genero'] = 'No se seleccionó ningún género' : '';
         (!isset($data->id_plataforma)) ? $errores['error_plataforma'] = 'No se seleccionó ninguna plataforma' : '';
+
         if(empty($errores)){
             //Iniciamos un nuevo objeto del tipo corresp ndiente
             $juegos = new Juegos();
             //Ejecutamos método correspondiente
-            $post = $juegos->put($data,$img);
+            $post = $juegos->put($data); // se cambia a un parametro por q la imagen se supone que no la recxibe mas 
             //Comprobamos estado de la ejecución
             if($post){
                 //Si fue exitosa entra acá

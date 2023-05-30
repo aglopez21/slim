@@ -20,7 +20,7 @@ $app->get('/', function (Request $request, Response $response, $args) {
 //a) Crear un nuevo género: implementar un endpoint para crear un nuevo genero en la tabla de géneros. El endpoint debe permitir enviar el nombre.
 $app->post('/generos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre
-    $data = $request->getQueryParams();
+    $data = $request->getParsedBody();
     if(isset($data)){
         $validacion = new Validacion();
     
@@ -107,14 +107,13 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
 
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
 $app->post('/plataformas', function (Request $request, Response $response, $args) {
-    $data = $request->getQueryParams();
+    $data = json_decode($request->getBody()->getContents());
     if(isset($data)){
         $validacion = new Validacion();
-    
         if($validacion->validarNombre($data['nombre'])){
             $plataformas = new Plataformas();
             $post = $plataformas->post($data);
-            if($post){
+            if($post->rowCount() > 0){
                 $response->getBody()->write(json_encode('{"msg": "Plataforma insertada correctamente."}', JSON_UNESCAPED_UNICODE));
                 $response->withHeader('Content-Type', 'application/json')->withStatus(200);
             }else{
@@ -135,16 +134,16 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/plataformas', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados: nombre e id
-    $data = $request->getQueryParams();
-    $validacion=new Validacion();
-    if($validacion->validarNombre($data['nombre'])){
+    $data = json_decode($request->getBody()->getContents());
+    var_dump($data);
+    $validacion = new Validacion();
+    if($validacion->validarNombre($data->nombre)){
         $plataformas = new Plataformas();
         $put = $plataformas->put($data);
-        if($put){
+        if($put->rowCount() > 0){
         $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}', JSON_UNESCAPED_UNICODE));
         $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        }
-        else{
+        }else{
             $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}"', JSON_UNESCAPED_UNICODE));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
@@ -201,7 +200,7 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Capturo los campos enviados
     $img=$request->getUploadedFiles();
-    $data = $request->getQueryParams();
+    $data = $request->getParsedBody();
     $validacion=new Validacion();
     $errores=[];
     //validamos el nombre

@@ -19,12 +19,12 @@ class Plataformas {
     }
 
     public function post($data) {
-        $query = "INSERT INTO plataformas (nombre) VALUES ('".$data['nombre']."')";
+        $query = "INSERT INTO plataformas (nombre) VALUES ('".$data->nombre."')";
         return $this->pdo->query($query);
     }
 
     public function put($data) {
-        $query = "UPDATE plataformas SET nombre='".$data['nombre']."' WHERE id=".$data['id'];
+        $query = "UPDATE plataformas SET nombre='".$data->nombre."' WHERE id=".$data->id;
         return $this->pdo->query($query);
     }
 

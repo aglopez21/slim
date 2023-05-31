@@ -434,4 +434,5 @@ $app->get('/buscar', function (Request $request, Response $response, $args) {
     return $endpoint;
 });
 
+//Corremos SLIM
 $app->run();

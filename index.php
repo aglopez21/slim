@@ -10,32 +10,29 @@ use App\Models\Validacion;
 
 require __DIR__ . '/vendor/autoload.php';
 
+//Función para construir respuestas JSON para cada ruta
+function sendJSON($response, $type, $message, $status_code) {
+    //Se recibe $response que será el de SLIM
+    //Se recibe el $type que es el nombre de la propiedad
+    //Se recibe el $message que será el valor de la propiedad
+    //Se recibe el $status_code que será el código de estado para la respuesta
+    //Si $type es 'arr' significa que recepcionamos un arreglo y no nu string json
+    if($type === 'arr'){
+        $response->getBody()->write(json_encode($message, JSON_UNESCAPED_UNICODE));
+        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
+    }else{
+        $response->getBody()->write(json_encode('{"'.$type.'": "'.$message.'"}', JSON_UNESCAPED_UNICODE));
+        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
+    }
+    //Retornamos respuesta generada
+    return $response;
+}  
+
 $app = AppFactory::create();    
 
 $app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write(json_encode('{"msg": "Bienvenido a la API!"}', JSON_UNESCAPED_UNICODE));
-    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    return sendJSON($response, 'msg', 'Bienvenido a la API!', 200);
 });
-
-/*
-
-    ESQUEMA
-
-    //Obtenemos los datos
-    //Comprobamos que no sean nulos
-        //Iniciamos un nuevo objeto de Validación
-        //Comprobamos que los datos sean válidos
-            //Iniciamos un nuevo objeto del tipo correspondiente
-            //Ejecutamos método correspondiente
-            //Comprobamos estado de la ejecución
-                //Si fue exitosa entra acá
-                //Si obtuvo un error entra acá
-            //Si la validación falló entra acá
-        //Si no existían datos entra acá
-    //Retornamos respuesta
-
-*/
-
 
 //a) Crear un nuevo género: implementar un endpoint para crear un nuevo genero en la tabla de géneros. El endpoint debe permitir enviar el nombre.
 $app->post('/generos', function (Request $request, Response $response, $args) {
@@ -52,27 +49,23 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
             //Ejecutamos método correspondiente
             $post = $generos->post($data);
             //Comprobamos estado de la ejecución
-            if($post->rowCount() > 0){
+            if($post->rowCount()){
                 //Si fue exitosa entra acá
-                $response->getBody()->write(json_encode('{"msg": "Género insertado correctamente."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                $endpoint = sendJSON($response, 'msg', 'Género insertado correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $response->getBody()->write(json_encode('{"error": "Error al insertar el género."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                $endpoint = sendJSON($response, 'error', 'Error al insertar el género.', 400);
             }
         }else{
             //Si la validación falló entra acá
-            $response->getBody()->write(json_encode('{"error": "Falló la validación."}', JSON_UNESCAPED_UNICODE)); 
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $endpoint = sendJSON($response, 'error', 'Falló la validación.', 400);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE)); 
-        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se envió ningún dato.', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
@@ -90,24 +83,23 @@ $app->put('/generos', function (Request $request, Response $response, $args) {
             //Ejecutamos método correspondiente
             $put = $generos->put($data);
             //Comprobamos estado de la ejecución
-            if($put->rowCount() > 0){
+            if($put->rowCount()){
                 //Si fue exitosa entra acá
-                $response->getBody()->write(json_encode('{"msg": "Género actualizado"}', JSON_UNESCAPED_UNICODE));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                $endpoint = sendJSON($response, 'msg', 'Género actualizado correctamente.', 200);
             } else {
                 //Si obtuvo un error entra acá
-                $response->getBody()->write(json_encode('{"msg": "Error al actualizar el genero."}', JSON_UNESCAPED_UNICODE))->withStatus(400);
+                $endpoint = sendJSON($response, 'error', 'No se ha encontrado el género a actualizar.', 404);
             }
         } else{
             //Si la validación falló entra acá
-            $response->getBody()->write(json_encode('{"msg": "Error en la validación del nombre."}', JSON_UNESCAPED_UNICODE))->withStatus(400);
+            $endpoint = sendJSON($response, 'error', 'Error en la validación del nombre.', 400);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"msg": "No se han enviado datos."}', JSON_UNESCAPED_UNICODE))->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se han enviado datos.', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //c) Eliminar un género: el endpoint debe permitir enviar el id del genero y eliminarlo de la tabla.
@@ -115,28 +107,25 @@ $app->delete('/generos', function (Request $request, Response $response, $args) 
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
     //Comprobamos que no sean nulos
-    if(isset($data)){
+    if(isset($data->id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $generos = new Generos();
         //Ejecutamos método correspondiente
         $delete = $generos->delete($data->id);
         //Comprobamos estado de la ejecución
-        if($delete->rowCount() > 0){
+        if($delete->rowCount()){
             //Si fue exitosa entra acá
-            $response->getBody()->write(json_encode('{"msg": "Género eliminado."}', JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            $endpoint = sendJSON($response, 'msg', 'Género eliminado correctamente.', 200);
         }else{
             //Si obtuvo un error entra acá
-            $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}', JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el género a eliminar.', 404);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"error": "Ocurrió algún error en la consulta."}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se envió el id del género a borrar.', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //d) Obtener todos los géneros: implemente un endpoint para obtener todos los géneros de la tabla.
@@ -146,17 +135,15 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
     //Ejecutamos método correspondiente
     $get = $generos->get();
     //Comprobamos estado de la ejecución
-    if($get->rowCount() > 0){
+    if($get->rowCount()){
         //Si fue exitosa entra acá
-        $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //e) Crear una nueva plataforma: implementar un endpoint para crear una nueva plataforma en la tabla de plataformas. El endpoint debe permitir enviar el nombre.
@@ -174,27 +161,23 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
             //Ejecutamos método correspondiente
             $post = $plataformas->post($data);
             //Comprobamos estado de la ejecución
-            if($post->rowCount() > 0){
+            if($post->rowCount()){
                 //Si fue exitosa entra acá
-                $response->getBody()->write(json_encode('{"msg": "Plataforma insertada correctamente."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                $endpoint = sendJSON($response, 'msg', 'Plataforma insertada correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $response->getBody()->write(json_encode('{"error": "Error al insertar la plataforma."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                $endpoint = sendJSON($response, 'error', 'Error al insertar la plataforma.', 400);
             }
         }else{
             //Si la validación falló entra acá
-            $response->getBody()->write(json_encode('{"error": "Falló la validación."}', JSON_UNESCAPED_UNICODE)); 
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $endpoint = sendJSON($response, 'error', 'Error en la validación del nombre.', 400);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE)); 
-        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se envió ningún dato.', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
@@ -212,27 +195,23 @@ $app->put('/plataformas', function (Request $request, Response $response, $args)
             //Ejecutamos método correspondiente
             $put = $plataformas->put($data);
             //Comprobamos estado de la ejecución
-            if($put->rowCount() > 0){
+            if($put->rowCount()){
                 //Si fue exitosa entra acá
-                $response->getBody()->write(json_encode('{"msg": "Plataforma Actualizada."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                $endpoint = sendJSON($response, 'msg', 'Plataforma actualizada correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $response->getBody()->write(json_encode('{"msg": "ID no encontrado."}"', JSON_UNESCAPED_UNICODE));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+                $endpoint = sendJSON($response, 'error', 'No se pudo encontrar la plataforma a actualizar.', 404);
             }
         }else{
             //Si la validación falló entra acá
-            $response->getBody()->write(json_encode('{"error": "Fallo la validacion."}', JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $endpoint = sendJSON($response, 'error', 'Fallo la validación del nombre.', 400);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se envió ningún dato.', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //g) Eliminar una plataforma: el endpoint debe permitir enviar el id de la plataforma y eliminarla de la tabla.
@@ -240,28 +219,25 @@ $app->delete('/plataformas', function (Request $request, Response $response, $ar
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
     //Comprobamos que no sean nulos
-    if(isset($data)){
+    if(isset($data->id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $plataformas = new Plataformas();
         //Ejecutamos método correspondiente
         $delete = $plataformas->delete($data->id);
         //Comprobamos estado de la ejecución
-        if($delete->rowCount() > 0){
+        if($delete->rowCount()){
             //Si fue exitosa entra acá
-            $response->getBody()->write(json_encode('{"msg": "Plataforma eliminada."}', JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            $endpoint = sendJSON($response, 'msg', 'Plataforma eliminada correctamente.', 200);
         } else {
             //Si obtuvo un error entra acá
-            $response->getBody()->write(json_encode('{"msg": "Plataforma no encontrada."}', JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            $endpoint = sendJSON($response, 'error', 'No se ha encontrado la plataforma a eliminar.', 404);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se envió el id de la plataforma a eliminar', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //h) Obtener todas las plataformas: implemente un endpoint para obtener todos los géneros de la tabla.
@@ -271,93 +247,92 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
     //Ejecutamos método correspondiente
     $get = $plataformas->get();
     //Comprobamos estado de la ejecución
-    if($get->rowCount() > 0){
+    if($get->rowCount()){
         //Si fue exitosa entra acá
-        $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //i) Crear un nuevo juego: implementar un endpoint para crear un nuevo juego en la tabla de juegos. El endpoint debe permitir enviar el nombre, imagen, descripción, plataforma, URL y género.
 $app->post('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
-    $data = json_encode($request->getParsedBody());
-    $data = json_decode($data);
-    $img = $request->getUploadedFiles();
+    $data = json_decode($request->getBody()->getContents());
     //Comprobamos que no sean nulos
-    if(isset($data) && isset($img)){
+    if(isset($data)){
         //Iniciamos un nuevo objeto de Validación
         $validacion = new Validacion();
         //Iniciamos un arreglo de errores
         $errores = [];
         //Comprobamos que los datos sean válidos
         if (!isset($data->nombre)) {
+            //Si no se envió el nombre
             $errores['error_nombre'] = 'No se envió el nombre';
         }else{
+            //Si se envió el nombre comprobamos con método de la clase Validacion
             (!$validacion->validarNombre($data->nombre)) ? $errores['error_nombre'] = 'Nombre inválido' : '';
         }
-        if (!isset($img) || empty($img)) {
-            $errores['error_imagen'] = 'No se envió la imagen';
+        //Si no se envió la imagen
+        (!isset($data->imagen)) ? $errores['error_imagen'] = 'No se envió la imagen' : '';
+        if (!isset($data->imagen_tipo)) {
+            //Si no se envió el tipo de imagen
+            $errores['error_imagen'] = 'No se envió el tipo de imagen';
         }else{
-            (!$validacion->validarImagen($img['imagen']->getClientMediaType())) ? $errores['error_imagen'] = 'Imagen inválida' : '';
+            //Si se envió el tipo de imagen comprobamos con método de la clase Validacion
+            (!$validacion->validarImagen($data->imagen_tipo)) ? $errores['error_imagen_tipo'] = 'Extensión de imagen inválida' : '';
         }
         if (!isset($data->descripcion)) {
+            //Si no se envió la descripción
             $errores['error_descripcion'] = 'No se envió la descripción';
         }else{
+            //Si se envió la descripción comprobamos con método de la clase Validacion
             (!$validacion->validarDescripcion($data->descripcion)) ? $errores['error_descripcion'] = 'Descripción inválida' : '';
         }
         if (!isset($data->url)) {
+            //Si no se envió la URL
             $errores['error_url'] = 'No se envió la URL';
         }else{
+            //Si se envió la URL comprobamos con método de la clase Validacion
             (!$validacion->validarURL($data->url)) ? $errores['error_url'] = 'URL inválida' : '';
         }
+        //Si no se envió el género
         (!isset($data->id_genero)) ? $errores['error_genero'] = 'No se seleccionó ningún género' : '';
+        //Si no se envió la plataforma
         (!isset($data->id_plataforma)) ? $errores['error_plataforma'] = 'No se seleccionó ninguna plataforma' : '';
-
+        //Comprobamos que $errores esté vacío
         if(empty($errores)){
             //Iniciamos un nuevo objeto del tipo corresp ndiente
             $juegos = new Juegos();
             //Ejecutamos método correspondiente
-            $post = $juegos->post($data,$img);
+            $post = $juegos->post($data);
             //Comprobamos estado de la ejecución
-            if($post){
+            if($post->rowCount()){
                 //Si fue exitosa entra acá
-                $response->getBody()->write(json_encode('{"msg": "Juego  insertado correctamente."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                $endpoint = sendJSON($response, 'msg', 'Juego cargado exitosamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $response->getBody()->write(json_encode('{"error": "Error al insertar el juego."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+                $endpoint = sendJSON($response, 'error', 'Falló la carga del juego.', 400);
             }
         }else{
             //Si la validación falló entra acá
-            $response->getBody()->write(json_encode($errores, JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $endpoint = sendJSON($response, 'arr', $errores, 400);
         }
     }else{
         //Si no existían datos entra acá
-            $response->getBody()->write(json_encode('{"error": "No se enviaron todos los datos requeridos."}', JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se enviaron datos.', 400);
     }
     //Retornamos respuesta
-    return $response;
-
+    return $endpoint;
 });
 
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
 $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
-    $data=json_decode(file_get_contents('php://input'), true);
-    $data=json_encode($data);
-    $data=json_decode($data); // no me quedo otra que esto 
-    var_dump($data);
-
+    $data = json_decode($request->getBody()->getContents());
     //Comprobamos que no sean nulos
     if(isset($data->id)){
         //Iniciamos un nuevo objeto de Validación
@@ -366,39 +341,33 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         $errores = [];
         //Comprobamos que los datos sean válidos
         (isset($data->nombre) && !$validacion->validarNombre($data->nombre)) ? $errores['error_nombre'] = 'Nombre inválido' : '';
-        //(isset($img) && !$validacion->validarImagen($img['imagen']->getClientMediaType())) ? $errores['error_imagen'] = 'Imagen inválida' : '';
+        (!isset($data->imagen) && isset($data->imagen_tipo)) ? $errores['error_imagen'] = 'No se envió la imagen' : '';
+        (isset($data->imagen_tipo) && !$validacion->validarImagen($data->imagen_tipo)) ? $errores['error_imagen_tipo'] = 'Extensión de imagen inválida' : '';
         (isset($data->descripcion) && !$validacion->validarDescripcion($data->descripcion)) ? $errores['error_descripcion'] = 'Descripción inválida' : '';
         (isset($data->url) && !$validacion->validarURL($data->url)) ? $errores['error_url'] = 'URL inválida' : '';
-        (!isset($data->id_genero)) ? $errores['error_genero'] = 'No se seleccionó ningún género' : '';
-        (!isset($data->id_plataforma)) ? $errores['error_plataforma'] = 'No se seleccionó ninguna plataforma' : '';
-
         if(empty($errores)){
             //Iniciamos un nuevo objeto del tipo corresp ndiente
             $juegos = new Juegos();
             //Ejecutamos método correspondiente
-            $post = $juegos->put($data); // se cambia a un parametro por q la imagen se supone que no la recxibe mas 
+            $put = $juegos->put($data); // se cambia a un parametro por q la imagen se supone que no la recxibe mas 
             //Comprobamos estado de la ejecución
-            if($post){
+            if($put->rowCount()){
                 //Si fue exitosa entra acá
-                $response->getBody()->write(json_encode('{"msg": "Juego actualizado correctamente."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                $endpoint = sendJSON($response, 'msg', 'Juego actualizado correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $response->getBody()->write(json_encode('{"error": "Error al actualizar el juego."}', JSON_UNESCAPED_UNICODE));
-                $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+                $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a actualizar.', 400);
             }
         }else{
             //Si la validación falló entra acá
-            $response->getBody()->write(json_encode($errores, JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $endpoint = sendJSON($response, 'arr', $errores, 400);
         }
     }else{
         //Si no existían datos entra acá
-            $response->getBody()->write(json_encode('{"error": "No se envió el id del juego."}', JSON_UNESCAPED_UNICODE));
-            $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'error', 'No se envió el id del juego a actualizar.', 400);
     }
     //Retornamos respuesta
-    return $response;    
+    return $endpoint;    
 });
 
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.
@@ -406,28 +375,25 @@ $app->delete('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
     //Comprobamos que no sean nulos
-    if(isset($data)){
+    if(isset($data->id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $juegos = new Juegos();
         //Ejecutamos método correspondiente
         $delete = $juegos->delete($data->id);
         //Comprobamos estado de la ejecución
-        if($delete->rowCount() > 0){
+        if($delete->rowCount()){
             //Si fue exitosa entra acá
-            $response->getBody()->write(json_encode('{"msg": "Juego eliminado."}', JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            $endpoint = sendJSON($response, 'msg', 'Juego eliminado correctamente.', 200);
         } else {
             //Si obtuvo un error entra acá
-            $response->getBody()->write(json_encode('{"msg": "Juego no encontrado."}', JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a eliminar.', 404);
         }
     }else{
         //Si no existían datos entra acá
-        $response->getBody()->write(json_encode('{"error": "No se envió ningún dato."}', JSON_UNESCAPED_UNICODE));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        $endpoint = sendJSON($response, 'msg', 'No se envió el ID del juego a eliminar.', 400);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //l) Obtener todos los juegos: implemente un endpoint para obtener todos los juegos de la tabla.
@@ -437,17 +403,15 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     //Ejecutamos método correspondiente
     $get = $juegos->get();
     //Comprobamos estado de la ejecución
-    if($get->rowCount() > 0){
+    if($get->rowCount()){
         //Si fue exitosa entra acá
-        $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)
@@ -459,17 +423,15 @@ $app->get('/buscar', function (Request $request, Response $response, $args) {
     //Ejecutamos método correspondiente
     $get = $busqueda->buscar($data);
     //Comprobamos estado de la ejecución
-    if($get->rowCount() > 0){
+    if($get->rowCount()){
         //Si fue exitosa entra acá
-        $response->getBody()->write(json_encode($get->fetchAll(), JSON_UNESCAPED_UNICODE));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $response->getBody()->write(json_encode('{"msg": "No se encontraron datos en la BD."}', JSON_UNESCAPED_UNICODE));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
     }
     //Retornamos respuesta
-    return $response;
+    return $endpoint;
 });
 
 $app->run();

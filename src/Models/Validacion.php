@@ -7,7 +7,7 @@ class Validacion {
     //Declaramos una propiedad "configuración" en la clase que nos servirá para distintos métodos
     private $config;
 
-    public function _construct(){
+    public function __construct(){
         //Asignamos un límite para Descripción
         $this->config['topeDesc'] = 255;
         //Asignamos un límite para Url

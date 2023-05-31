@@ -122,7 +122,7 @@ class Juegos {
     //Generamos un método para una solicitud DELETE
     public function delete($id) {
         //Construimos el Query String que borrará el Juego donde juego.id sea igual al valor pasado por parámetro
-        $query = "DELETE FROM juegos WHERE".$id;
+        $query = "DELETE FROM juegos WHERE id=".$id;
         //Retornamos la ejecución del query
         return $this->pdo->query($query);
     }

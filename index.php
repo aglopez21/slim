@@ -352,40 +352,24 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         //Iniciamos un arreglo de errores
         $errores = [];
         //Comprobamos que los datos sean válidos
-        if (!isset($data->nombre)) {
-            //Si no se envió el nombre
-            $errores['error_nombre'] = 'No se envió el nombre';
-        }else{
+        if (isset($data->nombre)) {
             //Si se envió el nombre comprobamos con método de la clase Validacion
             (!$validacion->validarNombre($data->nombre)) ? $errores['error_nombre'] = 'Nombre inválido' : '';
         }
         //Si no se envió la imagen
-        (!isset($data->imagen)) ? $errores['error_imagen'] = 'No se envió la imagen' : '';
-        if (!isset($data->imagen_tipo)) {
-            //Si no se envió el tipo de imagen
-            $errores['error_imagen'] = 'No se envió el tipo de imagen';
-        }else{
-            //Si se envió el tipo de imagen comprobamos con método de la clase Validacion
+        if ((isset($data->imagen)) and (isset($data->imagen_tipo))) {
+          //Si se envio la imagen, validamos su tipo 
             (!$validacion->validarImagen($data->imagen_tipo)) ? $errores['error_imagen_tipo'] = 'Extensión de imagen inválida' : '';
         }
-        if (!isset($data->descripcion)) {
-            //Si no se envió la descripción
-            $errores['error_descripcion'] = 'No se envió la descripción';
-        }else{
+        if (isset($data->descripcion)) {
             //Si se envió la descripción comprobamos con método de la clase Validacion
             (!$validacion->validarDescripcion($data->descripcion)) ? $errores['error_descripcion'] = 'Descripción inválida' : '';
         }
-        if (!isset($data->url)) {
-            //Si no se envió la URL
-            $errores['error_url'] = 'No se envió la URL';
-        }else{
+
+        if (isset($data->url)) {
             //Si se envió la URL comprobamos con método de la clase Validacion
             (!$validacion->validarURL($data->url)) ? $errores['error_url'] = 'URL inválida' : '';
         }
-        //Si no se envió el género
-        (!isset($data->id_genero)) ? $errores['error_genero'] = 'No se seleccionó ningún género' : '';
-        //Si no se envió la plataforma
-        (!isset($data->id_plataforma)) ? $errores['error_plataforma'] = 'No se seleccionó ninguna plataforma' : '';
         //Comprobamos que $errores esté vacío
         if(empty($errores)){
             //Iniciamos un nuevo objeto del tipo corresp ndiente

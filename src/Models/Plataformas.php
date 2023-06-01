@@ -49,4 +49,10 @@ class Plataformas {
         return $this->pdo->query($query);
     }
 
+    //Generamos un método para comprobar si existe algún juego con el id_plataforma a eliminar
+    public function enJuego($id){
+        $query = $this->pdo->query("SELECT * FROM juegos WHERE id_plataforma=$id");
+        return ($query->rowCount());
+    }
+
 }

@@ -48,5 +48,11 @@ class Generos {
         //Retornamos la ejecución del query
         return $this->pdo->query($query);
     }
+    
+    //Generamos un método para comprobar si existe algún juego con el id_genero a eliminar
+    public function enJuego($id){
+        $query = $this->pdo->query("SELECT * FROM juegos WHERE id_genero=$id");
+        return ($query->rowCount());
+    }
 
 }

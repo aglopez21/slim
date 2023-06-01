@@ -110,15 +110,21 @@ $app->delete('/generos', function (Request $request, Response $response, $args) 
     if(isset($data->id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $generos = new Generos();
-        //Ejecutamos método correspondiente
-        $delete = $generos->delete($data->id);
-        //Comprobamos estado de la ejecución
-        if($delete->rowCount()){
-            //Si fue exitosa entra acá
-            $endpoint = sendJSON($response, 'msg', 'Género eliminado correctamente.', 200);
+        //Comprobamos si existe algún juego vinculado al id a borrar
+        if($generos->enJuego($data->id)){
+            //Si existe retornamos un error
+            $endpoint = sendJSON($response, 'error', 'No se ha podido eliminar el género, porque existen juegos vinculados al mismo.', 400);
         }else{
-            //Si obtuvo un error entra acá
-            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el género a eliminar.', 404);
+            //Ejecutamos método correspondiente
+            $delete = $generos->delete($data->id);
+            //Comprobamos estado de la ejecución
+            if($delete->rowCount()){
+                //Si fue exitosa entra acá
+                $endpoint = sendJSON($response, 'msg', 'Género eliminado correctamente.', 200);
+            }else{
+                //Si obtuvo un error entra acá
+                $endpoint = sendJSON($response, 'error', 'No se ha encontrado el género a eliminar.', 404);
+            }
         }
     }else{
         //Si no existían datos entra acá
@@ -222,15 +228,21 @@ $app->delete('/plataformas', function (Request $request, Response $response, $ar
     if(isset($data->id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $plataformas = new Plataformas();
-        //Ejecutamos método correspondiente
-        $delete = $plataformas->delete($data->id);
-        //Comprobamos estado de la ejecución
-        if($delete->rowCount()){
-            //Si fue exitosa entra acá
-            $endpoint = sendJSON($response, 'msg', 'Plataforma eliminada correctamente.', 200);
-        } else {
-            //Si obtuvo un error entra acá
-            $endpoint = sendJSON($response, 'error', 'No se ha encontrado la plataforma a eliminar.', 404);
+        //Comprobamos si existe algún juego vinculado al id a borrar
+        if($generos->enJuego($data->id)){
+            //Si existe retornamos un error
+            $endpoint = sendJSON($response, 'error', 'No se ha podido eliminar la plataforma, porque existen juegos vinculados al mismo.', 400);
+        }else{
+            //Ejecutamos método correspondiente
+            $delete = $plataformas->delete($data->id);
+            //Comprobamos estado de la ejecución
+            if($delete->rowCount()){
+                //Si fue exitosa entra acá
+                $endpoint = sendJSON($response, 'msg', 'Plataforma eliminada correctamente.', 200);
+            } else {
+                //Si obtuvo un error entra acá
+                $endpoint = sendJSON($response, 'error', 'No se ha encontrado la plataforma a eliminar.', 404);
+            }
         }
     }else{
         //Si no existían datos entra acá

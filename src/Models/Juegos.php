@@ -80,41 +80,8 @@ class Juegos {
     }
 
     public function put($data) {
-
-        $arregloSET = [];
-
-        //Comprobamos que exista y no esté vacío $data->nombre
-        if(isset($data->nombre) && !empty($data->nombre)){
-            $arregloSET[]='`nombre`="'.$data->nombre.'"';
-        }
-        //Comprobamos que exista y no esté vacío tanto $data->imagen como $data->imagen_tipo
-        if(isset($data->imagen) && !empty($data->imagen) && isset($data->imagen_tipo) && !empty($data->imagen_tipo)){
-            $arregloSET[]='`imagen`="'.$data->imagen.'"';
-            $arregloSET[]='`tipo_imagen`="'.$data->imagen_tipo.'"';
-        }
-        //Comprobamos que exista y no esté vacío $data->descripcion
-        if(isset($data->descripcion) && !empty($data->descripcion)){
-            $arregloSET[]='`descripcion`="'.$data->descripcion.'"';
-        }
-        //Comprobamos que exista y no esté vacío $data->url
-        if(isset($data->url) && !empty($data->url)){
-            $arregloSET[]='`url`="'.$data->url.'"';
-        }
-        //Comprobamos que exista y no esté vacío $data->id_genero
-        if(isset($data->id_genero) && !empty($data->id_genero)){
-            $arregloSET[]='`id_genero`="'.$data->id_genero.'" ';
-        }
-        //Comprobamos que exista y no esté vacío $data->id_plataforma
-        if(isset($data->id_plataforma) && !empty($data->id_plataforma)){
-            $arregloSET[]='`id_plataforma`="'.$data->id_plataforma.'"';
-        }
-
-        //Convertimos el arreglo en un string concatenando cada items por una ', '
-        $setsArr = implode(',' , $arregloSET);
-
         //Construimos el Query String con los campos y valores concatenados
-        $query = "UPDATE juegos SET $setsArr WHERE  `id`=".$data->id;
-
+        $query = 'UPDATE juegos SET `nombre`="'.$data->nombre.'", `imagen`="'.$data->imagen.'", `tipo_imagen`="'.$data->imagen_tipo.'", `descripcion`="'.$data->descripcion.'", `url`="'.$data->url.'", `id_genero`="'.$data->id_genero.'", `id_plataforma`="'.$data->id_plataforma.'" WHERE  `id`='.$data->id;
         //Retornamos la ejecución del query
         return $this->pdo->query($query);
     }

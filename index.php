@@ -346,29 +346,59 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
     //Comprobamos que no sean nulos
-    if(isset($data->id)){
+    if(isset($data)){
         //Iniciamos un nuevo objeto de Validación
         $validacion = new Validacion();
         //Iniciamos un arreglo de errores
         $errores = [];
         //Comprobamos que los datos sean válidos
-        (isset($data->nombre) && !$validacion->validarNombre($data->nombre)) ? $errores['error_nombre'] = 'Nombre inválido' : '';
-        (!isset($data->imagen) && isset($data->imagen_tipo)) ? $errores['error_imagen'] = 'No se envió la imagen' : '';
-        (isset($data->imagen_tipo) && !$validacion->validarImagen($data->imagen_tipo)) ? $errores['error_imagen_tipo'] = 'Extensión de imagen inválida' : '';
-        (isset($data->descripcion) && !$validacion->validarDescripcion($data->descripcion)) ? $errores['error_descripcion'] = 'Descripción inválida' : '';
-        (isset($data->url) && !$validacion->validarURL($data->url)) ? $errores['error_url'] = 'URL inválida' : '';
+        if (!isset($data->nombre)) {
+            //Si no se envió el nombre
+            $errores['error_nombre'] = 'No se envió el nombre';
+        }else{
+            //Si se envió el nombre comprobamos con método de la clase Validacion
+            (!$validacion->validarNombre($data->nombre)) ? $errores['error_nombre'] = 'Nombre inválido' : '';
+        }
+        //Si no se envió la imagen
+        (!isset($data->imagen)) ? $errores['error_imagen'] = 'No se envió la imagen' : '';
+        if (!isset($data->imagen_tipo)) {
+            //Si no se envió el tipo de imagen
+            $errores['error_imagen'] = 'No se envió el tipo de imagen';
+        }else{
+            //Si se envió el tipo de imagen comprobamos con método de la clase Validacion
+            (!$validacion->validarImagen($data->imagen_tipo)) ? $errores['error_imagen_tipo'] = 'Extensión de imagen inválida' : '';
+        }
+        if (!isset($data->descripcion)) {
+            //Si no se envió la descripción
+            $errores['error_descripcion'] = 'No se envió la descripción';
+        }else{
+            //Si se envió la descripción comprobamos con método de la clase Validacion
+            (!$validacion->validarDescripcion($data->descripcion)) ? $errores['error_descripcion'] = 'Descripción inválida' : '';
+        }
+        if (!isset($data->url)) {
+            //Si no se envió la URL
+            $errores['error_url'] = 'No se envió la URL';
+        }else{
+            //Si se envió la URL comprobamos con método de la clase Validacion
+            (!$validacion->validarURL($data->url)) ? $errores['error_url'] = 'URL inválida' : '';
+        }
+        //Si no se envió el género
+        (!isset($data->id_genero)) ? $errores['error_genero'] = 'No se seleccionó ningún género' : '';
+        //Si no se envió la plataforma
+        (!isset($data->id_plataforma)) ? $errores['error_plataforma'] = 'No se seleccionó ninguna plataforma' : '';
+        //Comprobamos que $errores esté vacío
         if(empty($errores)){
             //Iniciamos un nuevo objeto del tipo corresp ndiente
             $juegos = new Juegos();
             //Ejecutamos método correspondiente
-            $put = $juegos->put($data); // se cambia a un parametro por q la imagen se supone que no la recxibe mas 
+            $post = $juegos->put($data);
             //Comprobamos estado de la ejecución
-            if($put->rowCount()){
+            if($post->rowCount()){
                 //Si fue exitosa entra acá
-                $endpoint = sendJSON($response, 'msg', 'Juego actualizado correctamente.', 200);
+                $endpoint = sendJSON($response, 'msg', 'Juego actualizado exitosamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a actualizar.', 400);
+                $endpoint = sendJSON($response, 'error', 'No se encontró el juego a actualizar.', 404);
             }
         }else{
             //Si la validación falló entra acá
@@ -376,10 +406,10 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
         }
     }else{
         //Si no existían datos entra acá
-        $endpoint = sendJSON($response, 'error', 'No se envió el id del juego a actualizar.', 400);
+        $endpoint = sendJSON($response, 'error', 'No se enviaron datos.', 400);
     }
     //Retornamos respuesta
-    return $endpoint;    
+    return $endpoint;
 });
 
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.

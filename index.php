@@ -147,7 +147,7 @@ $app->get('/generos', function (Request $request, Response $response, $args) {
         $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
     }
     //Retornamos respuesta
     return $endpoint;
@@ -266,7 +266,7 @@ $app->get('/plataformas', function (Request $request, Response $response, $args)
         $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
     }
     //Retornamos respuesta
     return $endpoint;
@@ -415,7 +415,7 @@ $app->delete('/juegos/{id}', function (Request $request, Response $response, $ar
             $endpoint = sendJSON($response, 'msg', 'Juego eliminado correctamente.', 200);
         } else {
             //Si obtuvo un error entra acá
-            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a eliminar.', 400);
+            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a eliminar.', 404);
         }
     }else{
         //Si no existían datos entra acá

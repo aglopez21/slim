@@ -79,7 +79,7 @@ class Juegos {
         return $this->pdo->query($query);
     }
 
-    public function put($data) {
+    public function put($id, $data) {
 
         $arregloSET = [];
 
@@ -113,7 +113,7 @@ class Juegos {
         $setsArr = implode(',' , $arregloSET);
 
         //Construimos el Query String con los campos y valores concatenados
-        $query = "UPDATE juegos SET $setsArr WHERE  `id`=".$data->id;
+        $query = "UPDATE juegos SET $setsArr WHERE  `id`=".$id;
 
         //Retornamos la ejecución del query
         return $this->pdo->query($query);
@@ -130,10 +130,10 @@ class Juegos {
     //Generamos un método para una solicitud GET, pero que requiere filtrar datos
     public function buscar($data) {
         //Obtenemos los parametros por $data = pueden existir nombre, plataforma y género, por eso se concatena los resultados de los condicionantes
-        $condiciones = (isset($data->nombre) ? ' AND nombre="'.$data->nombre.'"' : '');
-        $condiciones .= (isset($data->plataforma) ? ' AND id_plataforma="'.$data->plataforma.'"' : '');
-        $condiciones .= (isset($data->genero) ? ' AND id_genero="'.$data->genero.'"' : '');
-        $condiciones .= (isset($data->orderby) ? ' ORDER BY nombre '.$data->orderby : '');
+        $condiciones = (isset($data['nombre']) ? ' AND nombre LIKE "%'.$data['nombre'].'%"' : '');
+        $condiciones .= (isset($data['plataforma']) ? ' AND id_plataforma="'.$data['plataforma'].'"' : '');
+        $condiciones .= (isset($data['genero']) ? ' AND id_genero="'.$data['genero'].'"' : '');
+        $condiciones .= (isset($data['orderby']) ? ' ORDER BY nombre '.$data['orderby'] : '');
         //Realizamos el string del QUERY
         $query = "SELECT * FROM juegos WHERE (1=1)".$condiciones;
         //Retornamos la consulta

@@ -34,9 +34,9 @@ class Generos {
     }
 
     //Generamos un método para una solicitud PUT
-    public function put($data) {
+    public function put($id, $data) {
         //Construimos el Query String para actualizar un Género. Este solo guarda un nuevo nombre, si generos.id es igual al id enviado por el usuario
-        $query = "UPDATE generos SET nombre='".$data->nombre."' WHERE id=".$data->id;
+        $query = "UPDATE generos SET nombre='".$data->nombre."' WHERE id=".$id;
         //Retornamos la ejecución del query
         return $this->pdo->query($query);
     }
@@ -53,6 +53,15 @@ class Generos {
     public function enJuego($id){
         $query = $this->pdo->query("SELECT * FROM juegos WHERE id_genero=$id");
         return ($query->rowCount());
+    }
+
+    //Comprobar existenciaID
+    public function existe($id){
+        $query = $this->pdo->query("SELECT * FROM generos WHERE id=$id");
+        if($query->rowCount() > 0){
+            return true;
+        }
+        return false;
     }
 
 }

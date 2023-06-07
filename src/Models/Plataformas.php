@@ -34,9 +34,9 @@ class Plataformas {
     }
 
     //Generamos un método para una solicitud PUT
-    public function put($data) {
+    public function put($id, $data) {
         //Construimos el Query String para actualizar una Plataforma. Este solo guarda un nuevo nombre, si plataformas.id es igual al id enviado por el usuario
-        $query = "UPDATE plataformas SET nombre='".$data->nombre."' WHERE id=".$data->id;
+        $query = "UPDATE plataformas SET nombre='".$data->nombre."' WHERE id=".$id;
         //Retornamos la ejecución del query
         return $this->pdo->query($query);
     }

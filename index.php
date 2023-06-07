@@ -18,11 +18,11 @@ function sendJSON($response, $type, $message, $status_code) {
     //Se recibe el $status_code que será el código de estado para la respuesta
     //Si $type es 'arr' significa que recepcionamos un arreglo y no nu string json
     if($type === 'arr'){
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode($message, JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
     }else{
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode('{"'.$type.'": "'.$message.'"}', JSON_UNESCAPED_UNICODE));
-        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
     }
     //Retornamos respuesta generada
     return $response;
@@ -54,7 +54,7 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
                 $endpoint = sendJSON($response, 'msg', 'Género insertado correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $endpoint = sendJSON($response, 'error', 'Error al insertar el género.', 400);
+                $endpoint = sendJSON($response, 'error', 'Error al insertar el género.', 200);
             }
         }else{
             //Si la validación falló entra acá
@@ -69,9 +69,10 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
 });
 
 //b) Actualizar información de un género: implementar un endpoint para actualizar la información de un género existente en la tabla de géneros. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/generos', function (Request $request, Response $response, $args) {
+$app->put('/generos/{id}', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
+    $id = $args['id'];
     //Comprobamos que no sean nulos
     if(isset($data)){
         //Iniciamos un nuevo objeto de Validación
@@ -81,7 +82,7 @@ $app->put('/generos', function (Request $request, Response $response, $args) {
             //Iniciamos un nuevo objeto del tipo correspondiente
             $generos = new Generos();
             //Ejecutamos método correspondiente
-            $put = $generos->put($data);
+            $put = $generos->put($id, $data);
             //Comprobamos estado de la ejecución
             if($put->rowCount()){
                 //Si fue exitosa entra acá
@@ -103,20 +104,20 @@ $app->put('/generos', function (Request $request, Response $response, $args) {
 });
 
 //c) Eliminar un género: el endpoint debe permitir enviar el id del genero y eliminarlo de la tabla.
-$app->delete('/generos', function (Request $request, Response $response, $args) {
+$app->delete('/generos/{id}', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
-    $data = json_decode($request->getBody()->getContents());
+    $id = $args['id'];
     //Comprobamos que no sean nulos
-    if(isset($data->id)){
+    if(isset($id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $generos = new Generos();
         //Comprobamos si existe algún juego vinculado al id a borrar
-        if($generos->enJuego($data->id)){
+        if($generos->enJuego($id)){
             //Si existe retornamos un error
             $endpoint = sendJSON($response, 'error', 'No se ha podido eliminar el género, porque existen juegos vinculados al mismo.', 400);
         }else{
             //Ejecutamos método correspondiente
-            $delete = $generos->delete($data->id);
+            $delete = $generos->delete($id);
             //Comprobamos estado de la ejecución
             if($delete->rowCount()){
                 //Si fue exitosa entra acá
@@ -187,9 +188,10 @@ $app->post('/plataformas', function (Request $request, Response $response, $args
 });
 
 //f) Actualizar información de una plataforma: implementar un endpoint para actualizar la información de una plataforma existente en la tabla de plataformas. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/plataformas', function (Request $request, Response $response, $args) {
+$app->put('/plataformas/{id}', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
+    $id = $args['id'];
     //Comprobamos que no sean nulos
     if(isset($data)){
         //Iniciamos un nuevo objeto de Validación
@@ -199,7 +201,7 @@ $app->put('/plataformas', function (Request $request, Response $response, $args)
             //Iniciamos un nuevo objeto del tipo correspondiente
             $plataformas = new Plataformas();
             //Ejecutamos método correspondiente
-            $put = $plataformas->put($data);
+            $put = $plataformas->put($id,$data);
             //Comprobamos estado de la ejecución
             if($put->rowCount()){
                 //Si fue exitosa entra acá
@@ -221,20 +223,20 @@ $app->put('/plataformas', function (Request $request, Response $response, $args)
 });
 
 //g) Eliminar una plataforma: el endpoint debe permitir enviar el id de la plataforma y eliminarla de la tabla.
-$app->delete('/plataformas', function (Request $request, Response $response, $args) {
+$app->delete('/plataformas/{id}', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
-    $data = json_decode($request->getBody()->getContents());
+    $id = $args['id'];
     //Comprobamos que no sean nulos
-    if(isset($data->id)){
+    if(isset($id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $plataformas = new Plataformas();
         //Comprobamos si existe algún juego vinculado al id a borrar
-        if($generos->enJuego($data->id)){
+        if($plataformas->enJuego($id)){
             //Si existe retornamos un error
             $endpoint = sendJSON($response, 'error', 'No se ha podido eliminar la plataforma, porque existen juegos vinculados al mismo.', 400);
         }else{
             //Ejecutamos método correspondiente
-            $delete = $plataformas->delete($data->id);
+            $delete = $plataformas->delete($id);
             //Comprobamos estado de la ejecución
             if($delete->rowCount()){
                 //Si fue exitosa entra acá
@@ -342,9 +344,10 @@ $app->post('/juegos', function (Request $request, Response $response, $args) {
 });
 
 //j) Actualizar información de un juego: implementar un endpoint para actualizar la información de un juego existente en la tabla de juegos. El endpoint debe permitir enviar el id y los campos que se quieran actualizar
-$app->put('/juegos', function (Request $request, Response $response, $args) {
+$app->put('/juegos/{id}', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = json_decode($request->getBody()->getContents());
+    $id = $args['id'];
     //Comprobamos que no sean nulos
     if(isset($data)){
         //Iniciamos un nuevo objeto de Validación
@@ -375,14 +378,14 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
             //Iniciamos un nuevo objeto del tipo corresp ndiente
             $juegos = new Juegos();
             //Ejecutamos método correspondiente
-            $post = $juegos->put($data);
+            $post = $juegos->put($id,$data);
             //Comprobamos estado de la ejecución
             if($post->rowCount()){
                 //Si fue exitosa entra acá
                 $endpoint = sendJSON($response, 'msg', 'Juego actualizado exitosamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $endpoint = sendJSON($response, 'error', 'No se encontró el juego a actualizar.', 404);
+                $endpoint = sendJSON($response, 'error', 'No se encontró el juego a actualizar.', 200);
             }
         }else{
             //Si la validación falló entra acá
@@ -397,22 +400,22 @@ $app->put('/juegos', function (Request $request, Response $response, $args) {
 });
 
 //k) Eliminar un juego: el endpoint debe permitir enviar el id del juego y eliminarlo de la tabla.
-$app->delete('/juegos', function (Request $request, Response $response, $args) {
+$app->delete('/juegos/{id}', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
-    $data = json_decode($request->getBody()->getContents());
+    $id = $args['id'];
     //Comprobamos que no sean nulos
-    if(isset($data->id)){
+    if(isset($id)){
         //Iniciamos un nuevo objeto del tipo correspondiente
         $juegos = new Juegos();
         //Ejecutamos método correspondiente
-        $delete = $juegos->delete($data->id);
+        $delete = $juegos->delete($id);
         //Comprobamos estado de la ejecución
         if($delete->rowCount()){
             //Si fue exitosa entra acá
             $endpoint = sendJSON($response, 'msg', 'Juego eliminado correctamente.', 200);
         } else {
             //Si obtuvo un error entra acá
-            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a eliminar.', 404);
+            $endpoint = sendJSON($response, 'error', 'No se ha encontrado el juego a eliminar.', 400);
         }
     }else{
         //Si no existían datos entra acá
@@ -424,41 +427,41 @@ $app->delete('/juegos', function (Request $request, Response $response, $args) {
 
 //l) Obtener todos los juegos: implemente un endpoint para obtener todos los juegos de la tabla.
 $app->get('/juegos', function (Request $request, Response $response, $args) {
-    //Iniciamos un nuevo objeto del tipo correspondiente
-    $juegos = new Juegos();
-    //Ejecutamos método correspondiente
-    $get = $juegos->get();
-    //Comprobamos estado de la ejecución
-    if($get->rowCount()){
-        //Si fue exitosa entra acá
-        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
-    } else {
-        //Si obtuvo un error entra acá
-        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
+    //Obtenemos los datos
+    $data = $request->getQueryParams();
+    
+    if(!empty($data)){
+        //Iniciamos un nuevo objeto del tipo correspondiente
+        $busqueda = new Juegos();
+        //Ejecutamos método correspondiente
+        $get = $busqueda->buscar($data);
+        //Comprobamos estado de la ejecución
+        if($get->rowCount()){
+            //Si fue exitosa entra acá
+            $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
+        } else {
+            //Si obtuvo un error entra acá
+            $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
+        }
+    }else{
+        //Iniciamos un nuevo objeto del tipo correspondiente
+        $juegos = new Juegos();
+        //Ejecutamos método correspondiente
+        $get = $juegos->get();
+        //Comprobamos estado de la ejecución
+        if($get->rowCount()){
+            //Si fue exitosa entra acá
+            $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
+        } else {
+            //Si obtuvo un error entra acá
+            $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
+        }
     }
     //Retornamos respuesta
     return $endpoint;
 });
 
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)
-$app->get('/buscar', function (Request $request, Response $response, $args) {
-    //Obtenemos los datos
-    $data = json_decode($request->getBody()->getContents());
-    //Iniciamos un nuevo objeto del tipo correspondiente
-    $busqueda = new Juegos();
-    //Ejecutamos método correspondiente
-    $get = $busqueda->buscar($data);
-    //Comprobamos estado de la ejecución
-    if($get->rowCount()){
-        //Si fue exitosa entra acá
-        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
-    } else {
-        //Si obtuvo un error entra acá
-        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 404);
-    }
-    //Retornamos respuesta
-    return $endpoint;
-});
 
 //Corremos SLIM
 $app->run();

@@ -28,6 +28,10 @@ function sendJSON($response, $type, $message, $status_code) {
     return $response;
 }  
 
+
+
+
+
 $app = AppFactory::create();    
 
 $app->get('/', function (Request $request, Response $response, $args) {
@@ -462,6 +466,21 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
 });
 
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)
+$app->map(["GET", "POST", "PUT","PATCH","DELETE"], '/{routes:.+}', function (Request $request, Response $response) {
+    throw new \Slim\Exception\HttpNotFoundException($request);
+})->setName('notFound');
+
+// Middleware para manejar la excepción HttpNotFoundException y generar una respuesta 404
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorMiddleware->setErrorHandler(\Slim\Exception\HttpNotFoundException::class, function (Request $request, Throwable $exception, bool $displayErrorDetails) use ($app) {
+    $response = $app->getResponseFactory()->createResponse();
+    return sendJSON($response, 'error', 'Ruta no encontrada.', 404);
+});
+
+
+
+
+
 
 //Corremos SLIM
 $app->run();

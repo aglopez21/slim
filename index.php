@@ -58,7 +58,7 @@ $app->post('/generos', function (Request $request, Response $response, $args) {
                 $endpoint = sendJSON($response, 'msg', 'Género insertado correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $endpoint = sendJSON($response, 'error', 'Error al insertar el género.', 200);
+                $endpoint = sendJSON($response, 'error', 'Error al insertar el género.', 400);
             }
         }else{
             //Si la validación falló entra acá

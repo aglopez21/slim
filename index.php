@@ -17,11 +17,12 @@ function sendJSON($response, $type, $message, $status_code) {
     //Se recibe el $message que será el valor de la propiedad
     //Se recibe el $status_code que será el código de estado para la respuesta
     //Si $type es 'arr' significa que recepcionamos un arreglo y no nu string json
+    $response = $response->withHeader('Access-Control-Allow-Origin','*');
     if($type === 'arr'){
-        $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
+        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode($message, JSON_UNESCAPED_UNICODE));
     }else{
-        $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
+        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode('{"'.$type.'": "'.$message.'"}', JSON_UNESCAPED_UNICODE));
     }
     //Retornamos respuesta generada
@@ -430,32 +431,17 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = $request->getQueryParams();
     
-    if(!empty($data)){
-        //Iniciamos un nuevo objeto del tipo correspondiente
-        $busqueda = new Juegos();
-        //Ejecutamos método correspondiente
-        $get = $busqueda->buscar($data);
-        //Comprobamos estado de la ejecución
-        if($get->rowCount()){
-            //Si fue exitosa entra acá
-            $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
-        } else {
-            //Si obtuvo un error entra acá
-            $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
-        }
-    }else{
-        //Iniciamos un nuevo objeto del tipo correspondiente
-        $juegos = new Juegos();
-        //Ejecutamos método correspondiente
-        $get = $juegos->get();
-        //Comprobamos estado de la ejecución
-        if($get->rowCount()){
-            //Si fue exitosa entra acá
-            $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
-        } else {
-            //Si obtuvo un error entra acá
-            $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
-        }
+    //Iniciamos un nuevo objeto del tipo correspondiente
+    $busqueda = new Juegos();
+    //Ejecutamos método correspondiente
+    $get = $busqueda->buscar($data);
+    //Comprobamos estado de la ejecución
+    if($get->rowCount()){
+        //Si fue exitosa entra acá
+        $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
+    } else {
+        //Si obtuvo un error entra acá
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
     }
     //Retornamos respuesta
     return $endpoint;

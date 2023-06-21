@@ -435,10 +435,9 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     //Obtenemos los datos
     $data = $request->getQueryParams();
     
-    //Iniciamos un nuevo objeto del tipo correspondiente
-    $busqueda = new Juegos();
+    $juegos = new Juegos();
     //Ejecutamos método correspondiente
-    $get = $busqueda->buscar($data);
+    $get = $juegos->buscar(null);
     //Comprobamos estado de la ejecución
     if($get->rowCount()){
         //Si fue exitosa entra acá
@@ -447,6 +446,7 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
         //Si obtuvo un error entra acá
         $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
     }
+
     //Retornamos respuesta
     return $endpoint;
 });

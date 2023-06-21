@@ -451,7 +451,7 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
         //Iniciamos un nuevo objeto del tipo correspondiente
         $juegos = new Juegos();
         //Ejecutamos método correspondiente
-        $get = $juegos->get();
+        $get = $juegos->buscar(null);
         //Comprobamos estado de la ejecución
         if($get->rowCount()){
             //Si fue exitosa entra acá

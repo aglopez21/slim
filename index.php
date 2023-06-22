@@ -17,14 +17,14 @@ function sendJSON($response, $type, $message, $status_code) {
     //Se recibe el $message que será el valor de la propiedad
     //Se recibe el $status_code que será el código de estado para la respuesta
     //Si $type es 'arr' significa que recepcionamos un arreglo y no nu string json
-    $response = $response->withHeader('Access-Control-Allow-Origin','*');
     if($type === 'arr'){
-        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode($message, JSON_UNESCAPED_UNICODE));
     }else{
-        $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
+        $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode('{"'.$type.'": "'.$message.'"}', JSON_UNESCAPED_UNICODE));
     }
+    $response->withHeader('Access-Control-Allow-Origin','*');
     //Retornamos respuesta generada
     return $response;
 }  
@@ -34,6 +34,7 @@ function sendJSON($response, $type, $message, $status_code) {
 
 
 $app = AppFactory::create();    
+header("Access-Control-Allow-Origin: *");
 
 $app->get('/', function (Request $request, Response $response, $args) {
     return sendJSON($response, 'msg', 'Bienvenido a la API!', 200);
@@ -437,7 +438,7 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     
     $juegos = new Juegos();
     //Ejecutamos método correspondiente
-    $get = $juegos->buscar(null);
+    $get = $juegos->buscar($data);
     //Comprobamos estado de la ejecución
     if($get->rowCount()){
         //Si fue exitosa entra acá

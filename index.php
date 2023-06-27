@@ -34,7 +34,19 @@ function sendJSON($response, $type, $message, $status_code) {
 
 
 $app = AppFactory::create();    
-header("Access-Control-Allow-Origin: *");
+
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+    return $response;
+});
+
+$app->add(function ($request, $handler) {
+    $response = $handler->handle($request);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+});
+
 
 $app->get('/', function (Request $request, Response $response, $args) {
     return sendJSON($response, 'msg', 'Bienvenido a la API!', 200);

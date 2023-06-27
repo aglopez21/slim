@@ -18,9 +18,14 @@ class Generos {
     }
 
     //Generamos un método para una solicitud GET
-    public function get() {
-        //Construimos el Query String para obtener de la tabla Géneros todos los datos almacenados
-        $query = "SELECT * FROM generos";
+    public function get($data) {
+        if(isset($data['id'])){
+            //Construimos el Query String para obtener de la tabla Géneros los datos del género solicitaod
+            $query = "SELECT * FROM generos WHERE id=".$data['id'];
+        }else{
+            //Construimos el Query String para obtener de la tabla Géneros todos los datos almacenados
+            $query = "SELECT * FROM generos";
+        }
         //Retornamos la ejecución del query
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }

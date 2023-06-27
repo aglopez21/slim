@@ -18,9 +18,14 @@ class Plataformas {
     }
 
     //Generamos un método para una solicitud GET
-    public function get() {
-        //Construimos el Query String para obtener de la tabla Plataformas todos los datos almacenados
-        $query = "SELECT * FROM plataformas";
+    public function get($data) {
+        if(isset($data['id'])){
+            //Construimos el Query String para obtener de la tabla Plataformas los datos del plataforma solicitada
+            $query = "SELECT * FROM plataformas WHERE id=".$data['id'];
+        }else{
+            //Construimos el Query String para obtener de la tabla Plataformas todos los datos almacenados
+            $query = "SELECT * FROM plataformas";
+        }
         //Retornamos la ejecución del query
         return $this->pdo->query($query, \PDO::FETCH_ASSOC);
     }

@@ -155,10 +155,12 @@ $app->delete('/generos/{id}', function (Request $request, Response $response, $a
 
 //d) Obtener todos los géneros: implemente un endpoint para obtener todos los géneros de la tabla.
 $app->get('/generos', function (Request $request, Response $response, $args) {
+    //Obtenemos los datos
+    $data = $request->getQueryParams();
     //Iniciamos un nuevo objeto del tipo correspondiente
     $generos = new Generos();
     //Ejecutamos método correspondiente
-    $get = $generos->get();
+    $get = $generos->get($data);
     //Comprobamos estado de la ejecución
     if($get->rowCount()){
         //Si fue exitosa entra acá
@@ -274,10 +276,12 @@ $app->delete('/plataformas/{id}', function (Request $request, Response $response
 
 //h) Obtener todas las plataformas: implemente un endpoint para obtener todos los géneros de la tabla.
 $app->get('/plataformas', function (Request $request, Response $response, $args) {
+    //Obtenemos los datos
+    $data = $request->getQueryParams();
     //Iniciamos un nuevo objeto del tipo correspondiente
     $plataformas = new Plataformas();
     //Ejecutamos método correspondiente
-    $get = $plataformas->get();
+    $get = $plataformas->get($data);
     //Comprobamos estado de la ejecución
     if($get->rowCount()){
         //Si fue exitosa entra acá
@@ -463,6 +467,8 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
     //Retornamos respuesta
     return $endpoint;
 });
+
+
 
 //m) Buscar juegos: implementar un endpoint que permita buscar juegos por nombre, plataforma y género. El endpoint deberá aceptar un nombre, un id de género, un id de plataforma y un orden por nombre (ASC o DESC)
 $app->map(["GET", "POST", "PUT","PATCH","DELETE"], '/{routes:.+}', function (Request $request, Response $response) {

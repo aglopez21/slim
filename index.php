@@ -462,7 +462,7 @@ $app->get('/juegos', function (Request $request, Response $response, $args) {
         $endpoint = sendJSON($response, 'arr', $get->fetchAll(), 200);
     } else {
         //Si obtuvo un error entra acá
-        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 200);
+        $endpoint = sendJSON($response, 'error', 'No se encontraron datos en la BD.', 400);
     }
 
     //Retornamos respuesta

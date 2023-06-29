@@ -130,10 +130,10 @@ class Juegos {
     //Generamos un método para una solicitud GET, pero que requiere filtrar datos
     public function buscar($data) {
         //Obtenemos los parametros por $data = pueden existir nombre, plataforma y género, por eso se concatena los resultados de los condicionantes
-        $condiciones = (isset($data['nombre']) ? ' AND nombre LIKE "%'.$data['nombre'].'%"' : '');
-        $condiciones .= (isset($data['plataforma']) ? ' AND id_plataforma="'.$data['plataforma'].'"' : '');
-        $condiciones .= (isset($data['genero']) ? ' AND id_genero="'.$data['genero'].'"' : '');
-        $condiciones .= (isset($data['orderby']) ? ' ORDER BY nombre '.$data['orderby'] : '');
+        $condiciones = (isset($data['nombre']) && (!empty($data['nombre'])) ? ' AND nombre LIKE "%'.$data['nombre'].'%"' : '');
+        $condiciones .= (isset($data['plataforma']) && (!empty($data['plataforma'])) ? ' AND id_plataforma="'.$data['plataforma'].'"' : '');
+        $condiciones .= (isset($data['genero']) && (!empty($data['genero'])) ? ' AND id_genero="'.$data['genero'].'"' : '');
+        $condiciones .= (isset($data['orderby']) && (!empty($data['orderby'])) ? ' ORDER BY nombre '.$data['orderby'] : '');
         //Realizamos el string del QUERY
         $query = "SELECT * FROM juegos WHERE (1=1)".$condiciones;
         //Retornamos la consulta

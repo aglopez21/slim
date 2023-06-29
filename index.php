@@ -21,8 +21,9 @@ function sendJSON($response, $type, $message, $status_code) {
         $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
         $response->getBody()->write(json_encode($message, JSON_UNESCAPED_UNICODE));
     }else{
+        $respuesta[$type] = $message;
         $response = $response->withHeader('Content-Type', 'application/json')->withStatus($status_code);
-        $response->getBody()->write(json_encode('{"'.$type.'": "'.$message.'"}', JSON_UNESCAPED_UNICODE));
+        $response->getBody()->write(json_encode($respuesta, JSON_UNESCAPED_UNICODE));
     }
     $response->withHeader('Access-Control-Allow-Origin','*');
     //Retornamos respuesta generada

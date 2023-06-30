@@ -108,7 +108,7 @@ $app->put('/generos/{id}', function (Request $request, Response $response, $args
                 $endpoint = sendJSON($response, 'msg', 'Género actualizado correctamente.', 200);
             } else {
                 //Si obtuvo un error entra acá
-                $endpoint = sendJSON($response, 'error', 'No se ha encontrado el género a actualizar.', 404);
+                $endpoint = sendJSON($response, 'error', 'El nombre es el mismo al actual.', 400);
             }
         } else{
             //Si la validación falló entra acá
@@ -229,7 +229,7 @@ $app->put('/plataformas/{id}', function (Request $request, Response $response, $
                 $endpoint = sendJSON($response, 'msg', 'Plataforma actualizada correctamente.', 200);
             }else{
                 //Si obtuvo un error entra acá
-                $endpoint = sendJSON($response, 'error', 'No se pudo encontrar la plataforma a actualizar.', 404);
+                $endpoint = sendJSON($response, 'error', 'El nombre es el mismo al actual.', 400);
             }
         }else{
             //Si la validación falló entra acá
